@@ -3,389 +3,367 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Delivery Org — Kanban Board</title>
+<title>Capacity Planner — AI Delivery Org</title>
 <style>
 :root {
   --navy:  #032D60;
-  --gold:  #0176D3;
+  --blue:  #0176D3;
   --teal:  #06A59A;
+  --green: #2E844A;
+  --amber: #A86403;
+  --red:   #BA0517;
   --white: #FFFFFF;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Salesforce Sans', 'Segoe UI', system-ui, -apple-system, sans-serif; background: #F3F2F2; color: #181818; min-height: 100vh; overflow-x: hidden; }
+body { font-family: 'Salesforce Sans', 'Segoe UI', system-ui, -apple-system, sans-serif; background: #F3F2F2; color: #181818; min-height: 100vh; }
 
 /* ── HEADER ─────────────────────────────────────────────────── */
 .header {
-  background: var(--navy); color: #fff;
-  padding: 0 20px; height: 54px;
-  display: flex; align-items: center; gap: 10px;
+  background: linear-gradient(135deg, #010E22 0%, #032D60 50%, #0176D3 100%);
+  color: #fff; padding: 0 24px; height: 58px;
+  display: flex; align-items: center; gap: 12px;
   position: sticky; top: 0; z-index: 200;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.35);
+  box-shadow: 0 2px 12px rgba(1,48,96,.35);
 }
-.header-logo { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; white-space: nowrap; }
-.header-logo span { color: var(--gold); }
-.sprint-badge {
-  background: var(--gold); color: var(--navy);
-  padding: 3px 11px; border-radius: 12px;
-  font-size: 11px; font-weight: 800; white-space: nowrap;
-}
+.header-logo { font-size: 17px; font-weight: 800; letter-spacing: -.3px; white-space: nowrap; }
+.header-logo span { color: #FFB75D; }
 .header-spacer { flex: 1; }
 .hbtn {
-  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25);
-  color: #fff; padding: 5px 13px; border-radius: 6px; cursor: pointer;
+  background: rgba(255,255,255,.13); border: 1px solid rgba(255,255,255,.28);
+  color: #fff; padding: 5px 14px; border-radius: 6px; cursor: pointer;
   font-size: 12px; font-weight: 600; transition: background .15s; white-space: nowrap;
 }
-.hbtn:hover { background: rgba(255,255,255,0.22); }
-.hbtn.gold { background: var(--gold); border-color: var(--gold); color: var(--navy); }
-.hbtn.gold:hover { background: #014486; }
-
-/* ── TOOLBAR ─────────────────────────────────────────────────── */
-.toolbar {
-  background: #fff; border-bottom: 3px solid #0176D3;
-  padding: 7px 20px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+.hbtn:hover { background: rgba(255,255,255,.24); }
+.hbtn.primary { background: #fff; color: var(--navy); border-color: #fff; }
+.hbtn.primary:hover { background: #E8F4FE; }
+.sync-pill {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px;
+  background: rgba(16,185,129,.18); color: #6ee7b7; border: 1px solid rgba(16,185,129,.3);
 }
-.tb-label { font-size: 10px; font-weight: 800; color: #888; text-transform: uppercase; letter-spacing: .6px; white-space: nowrap; }
-.pills { display: flex; gap: 5px; flex-wrap: wrap; }
-.pill {
-  padding: 3px 10px; border-radius: 10px; font-size: 11px; font-weight: 700;
-  cursor: pointer; border: 2px solid transparent; transition: all .15s; color: #fff; user-select: none;
+.sync-dot { width: 6px; height: 6px; border-radius: 50%; background: #34d399; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+
+/* ── PAGE BODY ───────────────────────────────────────────────── */
+.page { padding: 24px; max-width: 1200px; margin: 0 auto; }
+
+/* ── SUMMARY STRIP ───────────────────────────────────────────── */
+.summary-strip {
+  display: flex; gap: 0;
+  background: #fff; border: 1px solid #E0E0E0; border-radius: 10px;
+  overflow: hidden; margin-bottom: 22px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.07);
 }
-.pill.off { opacity: .38; }
-.pill.on  { border-color: var(--navy); box-shadow: 0 0 0 1px var(--navy); }
-.tb-divider { width: 1px; height: 22px; background: #DDD; flex-shrink: 0; }
-.tb-search { border: 1px solid #DDD; border-radius: 6px; padding: 5px 10px; font-size: 12px; width: 170px; outline: none; }
-.tb-search:focus { border-color: #0176D3; }
-.tb-select { border: 1px solid #DDD; border-radius: 6px; padding: 5px 8px; font-size: 12px; outline: none; background: #fff; cursor: pointer; }
+.sum-item { flex: 1; text-align: center; padding: 16px 10px; border-right: 1px solid #E0E0E0; position: relative; }
+.sum-item:last-child { border-right: none; }
+.sum-item::after { content:''; position:absolute; bottom:0; left:0; right:0; height:3px; }
+.sum-item.s-members::after  { background: var(--blue); }
+.sum-item.s-epics::after    { background: var(--teal); }
+.sum-item.s-avg::after      { background: var(--amber); }
+.sum-item.s-over::after     { background: var(--red); }
+.sum-item.s-under::after    { background: #FE9339; }
+.sum-val { font-size: 26px; font-weight: 800; line-height: 1; margin-bottom: 4px; color: var(--navy); }
+.sum-val.c-red   { color: var(--red); }
+.sum-val.c-amber { color: var(--amber); }
+.sum-val.c-green { color: var(--green); }
+.sum-val.c-blue  { color: var(--blue); }
+.sum-lbl { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: .5px; font-weight: 700; }
 
-/* ── BOARD ───────────────────────────────────────────────────── */
-.board-wrap { padding: 14px 20px 0; overflow-x: auto; height: calc(100vh - 112px); }
-.board { display: grid; grid-template-columns: repeat(5, minmax(260px, 1fr)); gap: 10px; height: 100%; min-width: 1310px; }
-
-/* ── COLUMN ──────────────────────────────────────────────────── */
-.column { background: #E5E5E5; border-radius: 10px; display: flex; flex-direction: column; height: 100%; overflow: hidden; transition: box-shadow .2s; }
-.column.drag-target { box-shadow: 0 0 0 3px #0176D3; }
-.col-header { padding: 9px 11px; display: flex; align-items: center; gap: 7px; border-radius: 10px 10px 0 0; flex-shrink: 0; }
-.col-name { color: #fff; font-weight: 800; font-size: 11px; letter-spacing: 1px; flex: 1; }
-.col-count { background: rgba(255,255,255,0.25); color: #fff; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 10px; min-width: 26px; text-align: center; }
-.col-add { background: rgba(255,255,255,0.2); border: none; color: #fff; width: 24px; height: 24px; border-radius: 6px; cursor: pointer; font-size: 18px; line-height: 1; display: flex; align-items: center; justify-content: center; transition: background .15s; flex-shrink: 0; }
-.col-add:hover { background: rgba(255,255,255,0.38); }
-.col-body { flex: 1; overflow-y: auto; padding: 7px; display: flex; flex-direction: column; gap: 7px; }
-.col-body::-webkit-scrollbar { width: 4px; }
-.col-body::-webkit-scrollbar-thumb { background: #C0C5CC; border-radius: 2px; }
-.col-empty { text-align: center; padding: 20px 10px; color: #AAA; font-size: 12px; font-style: italic; border: 2px dashed #CCC; border-radius: 8px; margin: 4px; }
-
-/* ── CARD ────────────────────────────────────────────────────── */
-.card { background: #fff; border-radius: 8px; border-left: 4px solid #CCC; box-shadow: 0 1px 4px rgba(0,0,0,0.10); cursor: grab; transition: box-shadow .15s, transform .15s, opacity .15s; position: relative; user-select: none; }
-.card:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.16); transform: translateY(-1px); }
-.card.dragging { opacity: .45; cursor: grabbing; transform: scale(1.02); }
-.card.hidden { display: none; }
-.card-body { padding: 9px 10px 6px 10px; }
-.card-title { font-size: 12px; font-weight: 700; color: #111; line-height: 1.4; margin-bottom: 6px; }
-.card-owner { font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 5px; margin-bottom: 5px; }
-.owner-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.card-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 5px; }
-.tag { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; }
-.tag-high   { background: #FEDED3; color: #BA0517; }
-.tag-medium { background: #FEF4EA; color: #A86403; }
-.tag-low    { background: #EEF5EA; color: #2E844A; }
-.tag-sprint { background: #EBF4FB; color: #032D60; }
-.tag-pts    { background: #F4F0FA; color: #6B37D0; font-weight: 800; }
-.tag-epic   { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; color: #fff; }
-.card-notes { font-size: 10px; color: #999; font-style: italic; line-height: 1.4; margin-top: 4px; }
-.card-footer { display: flex; justify-content: flex-end; padding: 3px 7px 5px; border-top: 1px solid #F2F2F2; }
-.card-edit { background: none; border: none; color: #BBB; cursor: pointer; font-size: 11px; padding: 2px 6px; border-radius: 4px; transition: color .15s, background .15s; font-weight: 600; }
-.card-edit:hover { color: #0176D3; background: #EBF4FB; }
-
-/* drag-over placeholder */
-.drop-ghost { height: 72px; border: 2px dashed #0176D3; border-radius: 8px; background: rgba(1,118,211,0.06); display: none; flex-shrink: 0; }
-.drop-ghost.show { display: block; }
-
-/* ── MODAL (shared) ──────────────────────────────────────────── */
-.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.52); z-index: 500; align-items: center; justify-content: center; }
-.overlay.open { display: flex; }
-.modal { background: #fff; border-radius: 12px; width: 520px; max-width: 96vw; max-height: 92vh; overflow-y: auto; box-shadow: 0 24px 70px rgba(0,0,0,.35); animation: fadeUp .2s ease; }
-@keyframes fadeUp { from { transform: translateY(16px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-.modal-head { background: var(--navy); color: #fff; padding: 15px 18px; border-radius: 12px 12px 0 0; display: flex; align-items: center; gap: 10px; }
-.modal-head h2 { font-size: 14px; font-weight: 700; flex: 1; }
-.modal-x { background: rgba(255,255,255,.18); border: none; color: #fff; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; }
-.modal-x:hover { background: rgba(255,255,255,.32); }
-.modal-body { padding: 18px 20px; }
-.fg { margin-bottom: 13px; }
-.fl { display: block; font-size: 10px; font-weight: 800; color: #666; text-transform: uppercase; letter-spacing: .6px; margin-bottom: 5px; }
-.fi, .fs, .fta { width: 100%; border: 1px solid #DDD; border-radius: 6px; padding: 8px 10px; font-size: 13px; font-family: inherit; outline: none; transition: border-color .15s; background: #fff; }
-.fi:focus, .fs:focus, .fta:focus { border-color: #0176D3; box-shadow: 0 0 0 3px rgba(1,118,211,.12); }
-.fta { resize: vertical; min-height: 68px; }
-.frow  { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.frow3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-.modal-foot { padding: 14px 20px; border-top: 1px solid #EEE; display: flex; gap: 8px; justify-content: flex-end; }
-.btn { padding: 8px 18px; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; border: none; transition: all .15s; }
-.btn-save   { background: #0176D3; color: #fff; }
-.btn-save:hover { background: #014486; }
-.btn-cancel { background: #F3F2F2; color: #444; }
-.btn-cancel:hover { background: #E5E5E5; }
-.btn-delete { background: #FEDED3; color: #BA0517; margin-right: auto; }
-.btn-delete:hover { background: #FEBBB0; }
-
-/* ── TOAST ───────────────────────────────────────────────────── */
-.toast { position: fixed; bottom: 22px; right: 22px; background: #032D60; color: #fff; padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; box-shadow: 0 4px 18px rgba(3,45,96,.30); transform: translateY(60px); opacity: 0; transition: all .28s; z-index: 1000; }
-.toast.show { transform: translateY(0); opacity: 1; }
-
-/* ── STATUSBAR ───────────────────────────────────────────────── */
-.statusbar { background: #F4F6F8; border-top: 1px solid #DDD; padding: 4px 20px; font-size: 11px; color: #999; display: flex; gap: 18px; flex-wrap: wrap; }
-
-/* ── EPIC MANAGER ────────────────────────────────────────────── */
-.epic-row { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid #F0F0F0; }
-.epic-row:last-child { border-bottom: none; }
-.epic-swatch { width: 18px; height: 18px; border-radius: 4px; flex-shrink: 0; border: 1px solid rgba(0,0,0,.1); }
-.epic-row-name { flex: 1; font-size: 13px; font-weight: 500; color: #181818; }
-.epic-row-color { width: 38px; height: 32px; border-radius: 5px; border: 1px solid #DDD; cursor: pointer; padding: 2px; flex-shrink: 0; }
-.epic-row-input { flex: 1; border: 1px solid #DDD; border-radius: 6px; padding: 6px 9px; font-size: 13px; font-family: inherit; outline: none; transition: border-color .15s; }
-.epic-row-input:focus { border-color: #0176D3; box-shadow: 0 0 0 3px rgba(1,118,211,.12); }
-.btn-icon { background: none; border: 1px solid #DDD; border-radius: 5px; padding: 4px 9px; font-size: 11px; font-weight: 700; cursor: pointer; transition: all .15s; white-space: nowrap; flex-shrink: 0; }
-.btn-icon.edit:hover    { color: #0176D3; border-color: #0176D3; background: #EBF4FB; }
-.btn-icon.del:hover     { color: #BA0517; border-color: #BA0517; background: #FEDED3; }
-.btn-icon.save-ep:hover { color: #2E844A; border-color: #2E844A; background: #EEF5EA; }
-.btn-icon.cancel-ep:hover { color: #514F4D; border-color: #514F4D; background: #F3F2F2; }
-.epic-add-section { margin-top: 16px; padding-top: 14px; border-top: 2px solid #EEE; }
-.epic-add-row { display: flex; gap: 8px; align-items: center; }
-.epic-list-wrap { max-height: 340px; overflow-y: auto; }
-
-/* ── CAPACITY PLANNER ────────────────────────────────────────── */
-.cap-summary {
-  display: flex; gap: 0; flex-wrap: wrap;
-  background: #fff; border: 1px solid #E5E5E5; border-radius: 10px;
-  margin-bottom: 18px; overflow: hidden;
+/* ── SECTION CARD ────────────────────────────────────────────── */
+.section-card {
+  background: #fff; border-radius: 10px; border: 1px solid #E0E0E0;
+  box-shadow: 0 1px 4px rgba(0,0,0,.07); overflow: hidden; margin-bottom: 22px;
 }
-.cap-summary-item { flex: 1; text-align: center; padding: 14px 8px; border-right: 1px solid #E5E5E5; min-width: 90px; }
-.cap-summary-item:last-child { border-right: none; }
-.cap-summary-val { font-size: 22px; font-weight: 800; color: #032D60; line-height: 1.1; margin-bottom: 3px; }
-.cap-summary-lbl { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: .5px; font-weight: 700; }
-.cap-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-.cap-table th {
+.section-head {
+  background: var(--navy); color: #fff;
+  padding: 12px 20px; display: flex; align-items: center; gap: 10px;
+}
+.section-head h2 { font-size: 13px; font-weight: 700; flex: 1; letter-spacing: .2px; }
+.section-body { padding: 18px 20px; }
+
+/* ── CAPACITY TABLE ──────────────────────────────────────────── */
+.cap-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.cap-table thead th {
   font-size: 10px; font-weight: 800; color: #666;
   text-transform: uppercase; letter-spacing: .6px;
-  padding: 7px 10px; border-bottom: 2px solid #EEE;
+  padding: 8px 12px; border-bottom: 2px solid #EEE;
   text-align: left; white-space: nowrap; background: #FAFAFA;
 }
-.cap-table th.r, .cap-table td.r { text-align: right; }
-.cap-table td { padding: 9px 10px; border-bottom: 1px solid #F5F5F5; vertical-align: middle; }
+.cap-table thead th.r { text-align: right; }
+.cap-table thead th.c { text-align: center; }
+.cap-table tbody td { padding: 10px 12px; border-bottom: 1px solid #F5F5F5; vertical-align: middle; }
+.cap-table tbody tr:last-child td { border-bottom: none; }
 .cap-table tbody tr:hover td { background: #FAFAFA; }
-.cap-table tr.cap-total td { font-weight: 800; border-top: 2px solid #DDD; background: #F3F2F2; }
-.cap-member { display: flex; align-items: center; gap: 8px; }
-.cap-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-.cap-input {
-  width: 52px; border: 1px solid #DDD; border-radius: 5px;
-  padding: 4px 6px; font-size: 12px; font-family: inherit;
-  outline: none; text-align: center; font-weight: 700; color: #032D60;
+.cap-table tr.total-row td { font-weight: 800; border-top: 2px solid #DDD; background: #F3F2F2; }
+
+.member-cell { display: flex; align-items: center; gap: 10px; }
+.member-avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 800; color: #fff; flex-shrink: 0;
+}
+.member-name  { font-size: 13px; font-weight: 700; }
+.member-role  { font-size: 10.5px; color: #888; margin-top: 1px; }
+
+/* utilization input */
+.util-input {
+  width: 70px; border: 1.5px solid #DDD; border-radius: 6px;
+  padding: 5px 8px; font-size: 13px; font-family: inherit;
+  outline: none; text-align: center; font-weight: 700; color: var(--navy);
   transition: border-color .15s;
 }
-.cap-input:focus { border-color: #0176D3; box-shadow: 0 0 0 2px rgba(1,118,211,.12); }
-.cap-bar-wrap { width: 90px; height: 8px; background: #E5E5E5; border-radius: 4px; overflow: hidden; flex-shrink: 0; }
-.cap-bar { height: 100%; border-radius: 4px; transition: width .4s ease, background .4s ease; }
-.cap-bar-cell { display: flex; align-items: center; gap: 8px; }
-.cap-pct { font-size: 11px; font-weight: 800; min-width: 44px; }
-.cap-sprint-badge { background: rgba(255,255,255,.18); padding: 3px 10px; border-radius: 10px; font-size: 11px; font-weight: 700; }
+.util-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(1,118,211,.12); }
+
+/* bar */
+.bar-wrap { width: 120px; height: 8px; background: #E5E5E5; border-radius: 4px; overflow: hidden; flex-shrink: 0; }
+.bar-fill { height: 100%; border-radius: 4px; transition: width .4s ease, background .4s ease; }
+.bar-cell { display: flex; align-items: center; gap: 9px; }
+.bar-pct  { font-size: 12px; font-weight: 800; min-width: 46px; }
+
+/* epic chips in row */
+.epic-chips { display: flex; gap: 5px; flex-wrap: wrap; }
+.epic-chip {
+  font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 4px; color: #fff;
+  white-space: nowrap;
+}
+
+/* add-row button */
+.add-row-btn {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 700; color: var(--blue);
+  background: #EBF4FB; border: 1.5px dashed #90C4ED; border-radius: 7px;
+  padding: 8px 14px; cursor: pointer; margin-top: 12px; transition: all .15s; width: 100%;
+  justify-content: center;
+}
+.add-row-btn:hover { background: #D6EBFA; border-color: var(--blue); }
+
+/* ── EPIC ALLOCATION TABLE ───────────────────────────────────── */
+.alloc-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.alloc-table thead th {
+  font-size: 10px; font-weight: 800; color: #666;
+  text-transform: uppercase; letter-spacing: .6px;
+  padding: 8px 12px; border-bottom: 2px solid #EEE;
+  background: #FAFAFA; text-align: left; white-space: nowrap;
+}
+.alloc-table tbody td { padding: 9px 12px; border-bottom: 1px solid #F5F5F5; vertical-align: middle; }
+.alloc-table tbody tr:last-child td { border-bottom: none; }
+.alloc-table tbody tr:hover td { background: #FAFAFA; }
+.alloc-input {
+  width: 70px; border: 1.5px solid #DDD; border-radius: 6px;
+  padding: 5px 8px; font-size: 13px; font-family: inherit;
+  outline: none; text-align: center; font-weight: 700; color: var(--navy);
+  transition: border-color .15s;
+}
+.alloc-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(1,118,211,.12); }
+
+/* ── MODAL ───────────────────────────────────────────────────── */
+.overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.48); z-index:500; align-items:center; justify-content:center; }
+.overlay.open { display:flex; }
+.modal { background:#fff; border-radius:12px; width:480px; max-width:96vw; max-height:90vh; overflow-y:auto; box-shadow:0 24px 60px rgba(0,0,0,.3); animation:fadeUp .2s ease; }
+@keyframes fadeUp { from{transform:translateY(14px);opacity:0} to{transform:translateY(0);opacity:1} }
+.modal-head { background:var(--navy); color:#fff; padding:14px 18px; border-radius:12px 12px 0 0; display:flex; align-items:center; gap:10px; }
+.modal-head h3 { font-size:14px; font-weight:700; flex:1; }
+.modal-x { background:rgba(255,255,255,.18); border:none; color:#fff; width:28px; height:28px; border-radius:6px; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; }
+.modal-x:hover { background:rgba(255,255,255,.32); }
+.modal-body { padding:18px 20px; }
+.fg { margin-bottom:13px; }
+.fl { display:block; font-size:10px; font-weight:800; color:#666; text-transform:uppercase; letter-spacing:.6px; margin-bottom:5px; }
+.fi, .fs { width:100%; border:1.5px solid #DDD; border-radius:6px; padding:8px 10px; font-size:13px; font-family:inherit; outline:none; transition:border-color .15s; background:#fff; }
+.fi:focus, .fs:focus { border-color:var(--blue); box-shadow:0 0 0 3px rgba(1,118,211,.12); }
+.frow { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.modal-foot { padding:12px 20px; border-top:1px solid #EEE; display:flex; gap:8px; justify-content:flex-end; }
+.btn { padding:8px 18px; border-radius:6px; font-size:13px; font-weight:700; cursor:pointer; border:none; transition:all .15s; }
+.btn-save   { background:var(--blue); color:#fff; }
+.btn-save:hover { background:#014486; }
+.btn-cancel { background:#F3F2F2; color:#444; }
+.btn-cancel:hover { background:#E5E5E5; }
+.btn-delete { background:#FEDED3; color:#BA0517; margin-right:auto; }
+.btn-delete:hover { background:#FEBBB0; }
+
+/* ── TOAST ───────────────────────────────────────────────────── */
+.toast { position:fixed; bottom:22px; right:22px; background:#032D60; color:#fff; padding:10px 18px; border-radius:8px; font-size:13px; font-weight:600; box-shadow:0 4px 18px rgba(3,45,96,.3); transform:translateY(60px); opacity:0; transition:all .28s; z-index:1000; }
+.toast.show { transform:translateY(0); opacity:1; }
+
+/* ── STATUS BAR ──────────────────────────────────────────────── */
+.statusbar { background:#F4F6F8; border-top:1px solid #DDD; padding:5px 24px; font-size:11px; color:#999; display:flex; gap:18px; flex-wrap:wrap; }
+
+/* colour swatches */
+.swatches { display:flex; gap:7px; flex-wrap:wrap; margin-top:4px; }
+.swatch { width:24px; height:24px; border-radius:50%; border:2.5px solid transparent; cursor:pointer; transition:.12s; }
+.swatch.active { border-color:#181818; transform:scale(1.18); }
 </style>
 </head>
 <body>
 
 <!-- HEADER -->
 <div class="header">
-  <div class="header-logo">AI<span> Delivery</span> Org</div>
-  <div class="sprint-badge">Sprint 1 · 04–08 May 2026</div>
+  <div class="header-logo">Capacity Planner<span> — AI Delivery Org</span></div>
   <div class="header-spacer"></div>
-  <button class="hbtn gold" onclick="openAddModal(null)">+ New Card</button>
-  <button class="hbtn" onclick="openCapacityPlanner()">&#128202; Capacity</button>
-  <button class="hbtn" onclick="openEpicManager()">&#9881; Manage Epics</button>
-  <button class="hbtn" onclick="exportJSON()">Export</button>
-  <button class="hbtn" onclick="document.getElementById('importFile').click()">Import</button>
-  <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
-  <button class="hbtn" onclick="resetToDefaults()">Reset</button>
+  <button class="hbtn primary" onclick="openAddMemberModal()">+ Member</button>
+  <button class="hbtn" onclick="openEpicModal()">+ Epic</button>
+  <button class="hbtn" onclick="exportCSV()">↓ CSV</button>
+  <div class="sync-pill"><span class="sync-dot"></span><span id="sync-text">Saved</span></div>
 </div>
 
-<!-- TOOLBAR -->
-<div class="toolbar">
-  <span class="tb-label">Member</span>
-  <div class="pills" id="member-pills"></div>
-  <div class="tb-divider"></div>
-  <span class="tb-label">Epic</span>
-  <div class="pills" id="epic-pills"></div>
-  <div class="tb-divider"></div>
-  <span class="tb-label">Priority</span>
-  <select class="tb-select" id="priority-filter" onchange="applyFilters()">
-    <option value="all">All</option>
-    <option value="High">High</option>
-    <option value="Medium">Medium</option>
-    <option value="Low">Low</option>
-  </select>
-  <div class="tb-divider"></div>
-  <input class="tb-search" id="search-input" type="text" placeholder="Search cards…" oninput="applyFilters()">
-  <div class="tb-divider"></div>
-  <span class="tb-label" id="visible-count"></span>
-</div>
+<!-- PAGE -->
+<div class="page">
 
-<!-- BOARD -->
-<div class="board-wrap">
-  <div class="board" id="board"></div>
-</div>
-
-<!-- STATUSBAR -->
-<div class="statusbar">
-  <span id="sb-total">Loading…</span>
-  <span id="sb-saved"></span>
-  <span>AI Delivery Org · Kanban Board · Built with Claude AI · Dipra Sanyal · May 2026</span>
-</div>
-
-<!-- CARD MODAL -->
-<div class="overlay" id="overlay" onclick="overlayClick(event)">
-  <div class="modal" id="modal">
-    <div class="modal-head">
-      <h2 id="modal-title-label">Edit Card</h2>
-      <button class="modal-x" onclick="closeModal()">&#x2715;</button>
+  <!-- SUMMARY STRIP -->
+  <div class="summary-strip">
+    <div class="sum-item s-members">
+      <div class="sum-val c-blue" id="s-members">0</div>
+      <div class="sum-lbl">Team Members</div>
     </div>
-    <div class="modal-body">
-      <div class="fg">
-        <label class="fl">Work Item / Project *</label>
-        <input class="fi" id="f-title" type="text" placeholder="Enter work item name">
-      </div>
-      <div class="fg">
-        <label class="fl">Description</label>
-        <textarea class="fta" id="f-desc" placeholder="Brief description of the work item"></textarea>
-      </div>
-      <div class="frow">
-        <div class="fg">
-          <label class="fl">Assigned To *</label>
-          <select class="fs" id="f-owner"></select>
-        </div>
-        <div class="fg">
-          <label class="fl">Priority</label>
-          <select class="fs" id="f-priority">
-            <option>High</option>
-            <option>Medium</option>
-            <option>Low</option>
-          </select>
-        </div>
-      </div>
-      <div class="fg">
-        <label class="fl">Epic</label>
-        <select class="fs" id="f-epic"></select>
-      </div>
-      <div class="frow3">
-        <div class="fg">
-          <label class="fl">Sprint</label>
-          <input class="fi" id="f-sprint" type="text" placeholder="e.g. Sprint 1">
-        </div>
-        <div class="fg">
-          <label class="fl">Estimated Hours</label>
-          <select class="fs" id="f-points">
-            <option value="1">1 hr</option>
-            <option value="2">2 hrs</option>
-            <option value="4">4 hrs</option>
-            <option value="6" selected>6 hrs</option>
-            <option value="8">8 hrs</option>
-            <option value="12">12 hrs</option>
-            <option value="16">16 hrs</option>
-            <option value="20">20 hrs</option>
-            <option value="24">24 hrs</option>
-            <option value="32">32 hrs</option>
-            <option value="40">40 hrs</option>
-          </select>
-        </div>
-        <div class="fg">
-          <label class="fl">Status (Column)</label>
-          <select class="fs" id="f-status"></select>
-        </div>
-      </div>
-      <div class="fg">
-        <label class="fl">Notes / Status Update</label>
-        <textarea class="fta" id="f-notes" placeholder="Latest status or blockers"></textarea>
-      </div>
+    <div class="sum-item s-epics">
+      <div class="sum-val" id="s-epics" style="color:var(--teal)">0</div>
+      <div class="sum-lbl">Active Epics</div>
     </div>
-    <div class="modal-foot">
-      <button class="btn btn-delete" id="btn-delete" onclick="deleteCard()">Delete Card</button>
-      <button class="btn btn-cancel" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-save" onclick="saveModal()">Save</button>
+    <div class="sum-item s-avg">
+      <div class="sum-val c-amber" id="s-avg">—</div>
+      <div class="sum-lbl">Avg Utilization</div>
+    </div>
+    <div class="sum-item s-over">
+      <div class="sum-val c-red" id="s-over">0</div>
+      <div class="sum-lbl">Over-allocated (&gt;100%)</div>
+    </div>
+    <div class="sum-item s-under">
+      <div class="sum-val c-amber" id="s-under">0</div>
+      <div class="sum-lbl">Under-allocated (&lt;80%)</div>
     </div>
   </div>
-</div>
 
-<!-- EPIC MANAGER MODAL -->
-<div class="overlay" id="epic-overlay" onclick="epicOverlayClick(event)">
-  <div class="modal" style="width:560px">
-    <div class="modal-head">
-      <h2>&#9881; Manage Epics</h2>
-      <button class="modal-x" onclick="closeEpicManager()">&#x2715;</button>
+  <!-- CAPACITY TABLE -->
+  <div class="section-card">
+    <div class="section-head">
+      <h2>📊 Team Capacity — Utilization %</h2>
+      <span style="font-size:11px;opacity:.7">Click any Utilization % value to edit</span>
     </div>
-    <div class="modal-body">
-      <p style="font-size:12px;color:#666;margin-bottom:14px;">Add, rename, recolor, or delete epics. Changes apply immediately to all cards on the board.</p>
-      <div class="epic-list-wrap" id="epic-list"></div>
-      <div class="epic-add-section">
-        <label class="fl" style="margin-bottom:8px;">Add New Epic</label>
-        <div class="epic-add-row">
-          <input class="epic-row-input" id="new-epic-name" type="text" placeholder="Epic name…" onkeydown="if(event.key==='Enter')saveNewEpic()">
-          <input type="color" class="epic-row-color" id="new-epic-color" value="#0176D3" title="Choose colour">
-          <button class="btn btn-save" style="padding:7px 16px;font-size:12px;" onclick="saveNewEpic()">+ Add</button>
-        </div>
-      </div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn btn-cancel" onclick="closeEpicManager()">Close</button>
-    </div>
-  </div>
-</div>
-
-<!-- CAPACITY PLANNER MODAL -->
-<div class="overlay" id="cap-overlay" onclick="capOverlayClick(event)">
-  <div class="modal" style="width:740px;max-width:98vw">
-    <div class="modal-head" style="gap:12px">
-      <h2>&#128202; Sprint Capacity Planner</h2>
-      <span class="cap-sprint-badge" id="cap-sprint-label">Sprint 1</span>
-      <button class="modal-x" onclick="closeCapacityPlanner()">&#x2715;</button>
-    </div>
-    <div class="modal-body">
-      <!-- Summary strip -->
-      <div class="cap-summary">
-        <div class="cap-summary-item">
-          <div class="cap-summary-val" id="cap-sum-cap">—</div>
-          <div class="cap-summary-lbl">Total Capacity</div>
-        </div>
-        <div class="cap-summary-item">
-          <div class="cap-summary-val" id="cap-sum-assigned">—</div>
-          <div class="cap-summary-lbl">Hours Assigned</div>
-        </div>
-        <div class="cap-summary-item">
-          <div class="cap-summary-val" id="cap-sum-active" style="color:#FE9339">—</div>
-          <div class="cap-summary-lbl">Active (WIP)</div>
-        </div>
-        <div class="cap-summary-item">
-          <div class="cap-summary-val" id="cap-sum-done" style="color:#2E844A">—</div>
-          <div class="cap-summary-lbl">Done</div>
-        </div>
-        <div class="cap-summary-item">
-          <div class="cap-summary-val" id="cap-sum-pct">—</div>
-          <div class="cap-summary-lbl">Team Load</div>
-        </div>
-      </div>
-      <!-- Capacity table -->
+    <div class="section-body" style="padding:0">
       <table class="cap-table">
         <thead>
           <tr>
-            <th>Team Member</th>
-            <th class="r">Capacity (hrs)</th>
-            <th class="r">Assigned (hrs)</th>
-            <th class="r">Active / WIP</th>
-            <th class="r">Done</th>
-            <th style="min-width:170px">Utilization</th>
+            <th style="min-width:200px">Team Member</th>
+            <th class="c">Utilization %</th>
+            <th>Epics Assigned</th>
+            <th style="min-width:180px">Load</th>
+            <th style="width:80px">Status</th>
+            <th style="width:60px"></th>
           </tr>
         </thead>
         <tbody id="cap-tbody"></tbody>
       </table>
-      <p style="font-size:11px;color:#AAA;margin-top:14px;font-style:italic">
-        &#128161; Click any capacity value to edit it. Hours come from each card's Estimated Hours field. Changes are saved automatically to your browser.
-      </p>
+      <div style="padding:12px 20px 16px">
+        <button class="add-row-btn" onclick="openAddMemberModal()">＋ Add Team Member</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EPIC ALLOCATION TABLE -->
+  <div class="section-card">
+    <div class="section-head">
+      <h2>🎯 Epic Allocation</h2>
+      <button onclick="openEpicModal()" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:4px 12px;border-radius:5px;cursor:pointer;font-size:11px;font-weight:600">+ Add Epic</button>
+    </div>
+    <div class="section-body" style="padding:0">
+      <table class="alloc-table">
+        <thead>
+          <tr>
+            <th style="min-width:220px">Epic</th>
+            <th>Owner / DRI</th>
+            <th class="c">Target Utilization %</th>
+            <th>Status</th>
+            <th>Notes</th>
+            <th style="width:60px"></th>
+          </tr>
+        </thead>
+        <tbody id="epic-tbody"></tbody>
+      </table>
+      <div style="padding:12px 20px 16px">
+        <button class="add-row-btn" onclick="openEpicModal()">＋ Add Epic</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<!-- STATUS BAR -->
+<div class="statusbar">
+  <span id="sb-info">Loading…</span>
+  <span>Capacity Planner — AI Delivery Org · Built with Claude AI</span>
+</div>
+
+<!-- ADD/EDIT MEMBER MODAL -->
+<div class="overlay" id="member-overlay" onclick="if(event.target===this)closeMemberModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="member-modal-title">👤 Add Team Member</h3>
+      <button class="modal-x" onclick="closeMemberModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="fg">
+        <label class="fl">Full Name *</label>
+        <input class="fi" id="mb-name" type="text" placeholder="e.g. Rajan Julka">
+      </div>
+      <div class="fg">
+        <label class="fl">Role</label>
+        <input class="fi" id="mb-role" type="text" placeholder="e.g. AI Delivery Lead">
+      </div>
+      <div class="fg">
+        <label class="fl">Utilization %</label>
+        <input class="fi" id="mb-util" type="number" min="0" max="200" placeholder="e.g. 80">
+      </div>
+      <div class="fg">
+        <label class="fl">Colour</label>
+        <div class="swatches" id="mb-swatches"></div>
+      </div>
     </div>
     <div class="modal-foot">
-      <button class="btn btn-cancel" onclick="closeCapacityPlanner()">Close</button>
+      <button class="btn btn-delete" id="mb-delete-btn" onclick="deleteMember()" style="display:none">Delete</button>
+      <button class="btn btn-cancel" onclick="closeMemberModal()">Cancel</button>
+      <button class="btn btn-save" onclick="saveMember()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD/EDIT EPIC MODAL -->
+<div class="overlay" id="epic-overlay" onclick="if(event.target===this)closeEpicModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="epic-modal-title">🎯 Add Epic</h3>
+      <button class="modal-x" onclick="closeEpicModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="fg">
+        <label class="fl">Epic Name *</label>
+        <input class="fi" id="ep-name" type="text" placeholder="e.g. Own Our Narrative">
+      </div>
+      <div class="frow">
+        <div class="fg">
+          <label class="fl">Owner / DRI</label>
+          <input class="fi" id="ep-owner" type="text" placeholder="Name…">
+        </div>
+        <div class="fg">
+          <label class="fl">Target Utilization %</label>
+          <input class="fi" id="ep-util" type="text" placeholder="e.g. 50%">
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl">Status</label>
+        <input class="fi" id="ep-status" type="text" placeholder="e.g. In Progress, To Do, Done…">
+      </div>
+      <div class="fg">
+        <label class="fl">Notes</label>
+        <input class="fi" id="ep-notes" type="text" placeholder="Blockers, links, updates…">
+      </div>
+      <div class="fg">
+        <label class="fl">Colour</label>
+        <div class="swatches" id="ep-swatches"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-delete" id="ep-delete-btn" onclick="deleteEpic()" style="display:none">Delete</button>
+      <button class="btn btn-cancel" onclick="closeEpicModal()">Cancel</button>
+      <button class="btn btn-save" onclick="saveEpic()">Save</button>
     </div>
   </div>
 </div>
@@ -394,696 +372,348 @@ body { font-family: 'Salesforce Sans', 'Segoe UI', system-ui, -apple-system, san
 <div class="toast" id="toast"></div>
 
 <script>
-// ── CONFIG ───────────────────────────────────────────────────────────────────
-const COLUMNS = ["BACKLOG","TO DO","IN PROGRESS","IN REVIEW","DONE"];
-
-const COL_COLORS = {
-  "BACKLOG":     "#514F4D",
-  "TO DO":       "#0176D3",
-  "IN PROGRESS": "#FE9339",
-  "IN REVIEW":   "#9050E9",
-  "DONE":        "#2E844A",
-};
-
-const MEMBERS = [
-  "Lopamudra Misra",
-  "Pavan Kumar Bayana",
-  "Pranav Gupta",
-  "Rajan Julka",
-  "VJ Swaminathan",
-  "Dipra Sanyal",
-];
-const MEMBER_HEX = {
-  "Lopamudra Misra":     "#0176D3",
-  "Pavan Kumar Bayana":  "#06A59A",
-  "Pranav Gupta":        "#FE9339",
-  "Rajan Julka":         "#EA001E",
-  "VJ Swaminathan":      "#9050E9",
-  "Dipra Sanyal":        "#032D60",
-};
-
-const DEFAULT_EPICS = [
-  { name: "GEM Pipeline",                     color: "#0176D3" },
-  { name: "Own Our Narrative",                color: "#9050E9" },
-  { name: "AI PM & Product Enablement",       color: "#06A59A" },
-  { name: "AI Tooling & Product-Engineering", color: "#EA001E" },
-  { name: "Delivery Leadership & Governance", color: "#032D60" },
-  { name: "EAC Programs",                     color: "#2E844A" },
-  { name: "EM & TPIL Offerings",              color: "#A86403" },
-  { name: "GTM & Market Activation",          color: "#BA0517" },
-];
-let EPICS = DEFAULT_EPICS.map(e => ({...e}));
-function epicHex(name) {
-  const ep = EPICS.find(e => e.name === name);
-  return ep ? ep.color : "#888";
-}
-
-// ── CAPACITY CONFIG ──────────────────────────────────────────────────────────
-const CAP_STORAGE_KEY = "ai_delivery_kanban_cap_v1";
-const DEFAULT_CAP     = 40; // hours per sprint per member
-let memberCapacity    = {};
-
-// ── DEFAULT DATA ─────────────────────────────────────────────────────────────
-const DEFAULT_CARDS = [
-  { id:"c1",  title:"AIDL Session — How LLMs Work",          desc:"Delivered use case identification framework for AIDL",                           sprint:"Sprint 1", priority:"Medium", owner:"Pranav Gupta",       notes:"Session conducted and completed",                          status:"DONE",        epic:"AI PM & Product Enablement",           points:4  },
-  { id:"c2",  title:"Data Cloud Experiments",                 desc:"Executed 2 hypothesis iterations — Adithya's & Regu's orgs",                    sprint:"Sprint 1", priority:"High",   owner:"VJ Swaminathan",     notes:"Both experiments closed",                                  status:"DONE",        epic:"AI Tooling & Product-Engineering",      points:8  },
-  { id:"c3",  title:"GEM Pipeline — Content & Adoption",     desc:"GEM updates, adoption survey, Service Cloud onboarding",                         sprint:"Sprint 1", priority:"High",   owner:"Pranav Gupta",       notes:"Adoption survey done — review pending",                     status:"IN REVIEW",   epic:"GEM Pipeline",                          points:6  },
-  { id:"c4",  title:"Own Our Narrative — Leadership",         desc:"T&P Council oversight, Salesforce Startup program coordination",                 sprint:"Sprint 1", priority:"High",   owner:"Lopamudra Misra",    notes:"T&P Council presentation done",                            status:"IN REVIEW",   epic:"Own Our Narrative",                     points:4  },
-  { id:"c5",  title:"Delivery Oversight & Director Reviews",  desc:"Sprint sign-offs, team reviews, leadership alignment",                           sprint:"Sprint 1", priority:"High",   owner:"Lopamudra Misra",    notes:"Ongoing",                                                  status:"IN PROGRESS", epic:"Delivery Leadership & Governance",      points:8  },
-  { id:"c6",  title:"GEM Pipeline — Enablement & Scaling",   desc:"Post-GA enablement, L&D co-creation, workshop content for Mfg & Service Clouds", sprint:"Sprint 1", priority:"High",   owner:"Pavan Kumar Bayana", notes:"AMER Prod Talk done; L++ monthly session planning",         status:"IN PROGRESS", epic:"GEM Pipeline",                          points:12 },
-  { id:"c7",  title:"AI Tooling Compass",                     desc:"Develop and harden AI tooling strategy for Product teams at Salesforce",         sprint:"Sprint 1", priority:"High",   owner:"Pavan Kumar Bayana", notes:"Dependent on Prod-Eng sync",                               status:"IN PROGRESS", epic:"AI Tooling & Product-Engineering",      points:12 },
-  { id:"c8",  title:"AI PM Hub",                              desc:"Go-live iteration with Heidi; content updates and publishing",                   sprint:"Sprint 1", priority:"High",   owner:"Pranav Gupta",       notes:"In progress — iteration ongoing since 24 Apr",              status:"IN PROGRESS", epic:"AI PM & Product Enablement",            points:8  },
-  { id:"c9",  title:"TPIL Collaboration",                     desc:"Prioritise TPIL backlog; align on top 2 efforts with Prabhjot",                  sprint:"Sprint 1", priority:"High",   owner:"Rajan Julka",        notes:"Thread started: Rajan, Prabz & Lopa",                      status:"IN PROGRESS", epic:"EM & TPIL Offerings",                   points:6  },
-  { id:"c10", title:"Flow Principles — Workshop Design",      desc:"Design workshop deck, gather feedback, validate with India EMs",                 sprint:"Sprint 1", priority:"High",   owner:"Rajan Julka",        notes:"Stacy leading; Rajan tracking progress",                   status:"IN PROGRESS", epic:"EM & TPIL Offerings",                   points:8  },
-  { id:"c11", title:"EM Offerings — Experiments",             desc:"Whiteboarding with EMs, build experiments, scale Scrum Agent",                   sprint:"Sprint 1", priority:"High",   owner:"Rajan Julka",        notes:"Datapoints delivered; official demo pending",              status:"IN PROGRESS", epic:"EM & TPIL Offerings",                   points:8  },
-  { id:"c12", title:"Own Our Narrative — Comms & India",      desc:"Messaging outreach; India Product Leadership session with Pavan",                sprint:"Sprint 1", priority:"Medium", owner:"VJ Swaminathan",     notes:"Messaging ready; India session this week",                 status:"IN PROGRESS", epic:"Own Our Narrative",                     points:6  },
-  { id:"c13", title:"EAC RTB — T&P Onboarding",              desc:"Logistics and operations for Informatica T&P onboarding sessions",               sprint:"Sprint 1", priority:"High",   owner:"Dipra Sanyal",       notes:"Ongoing onboarding sessions",                              status:"IN PROGRESS", epic:"EAC Programs",                          points:8  },
-  { id:"c14", title:"Own Our Narrative — Lunch & Connect",    desc:"Logistics for Lunch & Connect sessions; new initiative with Rajan",              sprint:"Sprint 1", priority:"Medium", owner:"Dipra Sanyal",       notes:"Draft plan shared with VJ on 23 Apr",                      status:"IN PROGRESS", epic:"Own Our Narrative",                     points:4  },
-  { id:"c15", title:"Sprint Planning & Coordination",         desc:"Sprint kickoff, backlog grooming, meeting logistics",                            sprint:"Sprint 1", priority:"High",   owner:"Dipra Sanyal",       notes:"Recurring each sprint",                                    status:"IN PROGRESS", epic:"Delivery Leadership & Governance",      points:4  },
-  { id:"c16", title:"Stakeholder Reporting",                  desc:"Weekly status deck and reporting to leadership",                                 sprint:"Sprint 1", priority:"Medium", owner:"Dipra Sanyal",       notes:"Recurring",                                                status:"IN PROGRESS", epic:"Delivery Leadership & Governance",      points:4  },
-  { id:"c17", title:"EAC Enablement Programs",                desc:"L++ backend updates, survey finalization and launch, VTO planning with Hector",  sprint:"Sprint 1", priority:"Medium", owner:"Dipra Sanyal",       notes:"L++ survey updated; pending final launch",                 status:"TO DO",       epic:"EAC Programs",                          points:6  },
-  { id:"c18", title:"Prod-Engineering Sync",                  desc:"Business problem solving with Milind's team; quick experiment setup",            sprint:"Sprint 1", priority:"Medium", owner:"Pavan Kumar Bayana", notes:"Core team on medical leave — awaiting",                    status:"BACKLOG",     epic:"AI Tooling & Product-Engineering",      points:4  },
-  { id:"c19", title:"AI PM Heroes Program — APAC",            desc:"Kick-start AI PM Heroes Program for APAC region",                                sprint:"Sprint 1", priority:"Medium", owner:"Pavan Kumar Bayana", notes:"Deferred; update due week of 4 May",                        status:"BACKLOG",     epic:"AI PM & Product Enablement",            points:8  },
-  { id:"c20", title:"GTM MC Cloud",                           desc:"Monitor status; await Lopa-Heidi conversation before restarting",                sprint:"Sprint 1", priority:"Low",    owner:"Pranav Gupta",       notes:"On hold",                                                  status:"BACKLOG",     epic:"GTM & Market Activation",               points:2  },
+/* ── PALETTE ──────────────────────────────────────────────────── */
+const PALETTE = [
+  '#0176D3','#032D60','#06A59A','#2E844A',
+  '#9050E9','#EA001E','#FE9339','#A86403',
+  '#DB2777','#0891B2','#4F46E5','#15803D'
 ];
 
-// ── STATE ────────────────────────────────────────────────────────────────────
-let cards = [];
-let dragId = null;
-let editingId = null;
-let activeMembers = new Set();
-let activeEpics   = new Set();
-let currentFilter = { priority: "all", search: "" };
+/* ── STATE ────────────────────────────────────────────────────── */
+const LS_KEY = 'capPlanner_aiDelivery_v1';
+let S = { members: {}, epics: {} };
 
-// ── STORAGE ──────────────────────────────────────────────────────────────────
-const STORAGE_KEY       = "ai_delivery_kanban_v1";
-const EPICS_STORAGE_KEY = "ai_delivery_kanban_epics_v1";
+/* ── SEED DATA ────────────────────────────────────────────────── */
+const SEED_MEMBERS = [
+  { id:'m1', name:'Lopamudra Misra',    role:'Director, AI Delivery',      util:100, color:'#0176D3' },
+  { id:'m2', name:'Rajan Julka',        role:'AI Delivery Lead Senior',    util:80,  color:'#EA001E' },
+  { id:'m3', name:'Pavan Kumar Bayana', role:'AI Delivery Lead',           util:80,  color:'#06A59A' },
+  { id:'m4', name:'Pranav Gupta',       role:'AI Delivery Lead',           util:80,  color:'#FE9339' },
+  { id:'m5', name:'VJ Swaminathan',     role:'AI Delivery Lead Senior',    util:80,  color:'#9050E9' },
+  { id:'m6', name:'Dipra Sanyal',       role:'Program Manager',            util:80,  color:'#032D60' },
+  { id:'m7', name:'Hector Reyes',       role:'AI Delivery Lead Senior',    util:80,  color:'#2E844A' },
+  { id:'m8', name:'Sohini Arya',        role:'AI Delivery Lead',           util:80,  color:'#DB2777' },
+  { id:'m9', name:'Arun Kumar P.',      role:'AI Delivery Lead',           util:80,  color:'#0891B2' },
+  { id:'m10',name:'Manjari Kumar',      role:'AI Delivery Lead',           util:80,  color:'#4F46E5' },
+  { id:'m11',name:'Kalyan Vandana',     role:'AI Delivery Lead Senior',    util:80,  color:'#A86403' },
+  { id:'m12',name:'Paul Rajiv',         role:'AI Delivery Lead',           util:80,  color:'#15803D' },
+];
+const SEED_EPICS = [
+  { id:'e1',  name:'GEM Pipeline',                           owner:'Pavan',  util:'80%', status:'In Progress', notes:'',  color:'#0176D3' },
+  { id:'e2',  name:'Own Our Narrative',                      owner:'Rajan',  util:'50%', status:'In Progress', notes:'',  color:'#9050E9' },
+  { id:'e3',  name:'AI PM & Product Enablement',             owner:'Pranav', util:'60%', status:'In Progress', notes:'',  color:'#06A59A' },
+  { id:'e4',  name:'AI Tooling & Product-Engineering',       owner:'Pavan',  util:'60%', status:'In Progress', notes:'',  color:'#EA001E' },
+  { id:'e5',  name:'Delivery Leadership & Governance',       owner:'Lopa',   util:'40%', status:'In Progress', notes:'',  color:'#032D60' },
+  { id:'e6',  name:'EAC Programs',                           owner:'Dipra',  util:'50%', status:'In Progress', notes:'',  color:'#2E844A' },
+  { id:'e7',  name:'EM & TPIL Offerings',                    owner:'Rajan',  util:'60%', status:'In Progress', notes:'',  color:'#A86403' },
+  { id:'e8',  name:'Scaling Experiments',                    owner:'VJ',     util:'50%', status:'To Do',       notes:'',  color:'#4F46E5' },
+  { id:'e9',  name:'Data Cloud – SDLC Agentic Orchestrator', owner:'VJ',     util:'60%', status:'In Progress', notes:'',  color:'#DB2777' },
+  { id:'e10', name:'Flow Workshop',                          owner:'Rajan',  util:'40%', status:'In Progress', notes:'',  color:'#0891B2' },
+];
 
-function save() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(cards));
-    const now = new Date();
-    document.getElementById("sb-saved").textContent =
-      "Saved " + now.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"});
-  } catch(e) {}
+/* ── PERSISTENCE ──────────────────────────────────────────────── */
+function loadState() {
+  const raw = localStorage.getItem(LS_KEY);
+  if (raw) {
+    try { const p = JSON.parse(raw); S.members = p.members||{}; S.epics = p.epics||{}; return; }
+    catch(e) {}
+  }
+  SEED_MEMBERS.forEach(m => { S.members[m.id] = {...m}; });
+  SEED_EPICS.forEach(e => { S.epics[e.id] = {...e}; });
+  saveState();
 }
-
-function saveEpics() {
-  try { localStorage.setItem(EPICS_STORAGE_KEY, JSON.stringify(EPICS)); } catch(e) {}
-}
-
-function saveCapacity() {
-  try { localStorage.setItem(CAP_STORAGE_KEY, JSON.stringify(memberCapacity)); } catch(e) {}
-}
-
-function loadCapacity() {
-  try {
-    const raw = localStorage.getItem(CAP_STORAGE_KEY);
-    if (raw) memberCapacity = JSON.parse(raw);
-  } catch(e) {}
-  MEMBERS.forEach(m => { if (!memberCapacity[m]) memberCapacity[m] = DEFAULT_CAP; });
-}
-
-function loadFromStorage() {
-  // Load epics
-  try {
-    const rawEpics = localStorage.getItem(EPICS_STORAGE_KEY);
-    if (rawEpics) EPICS = JSON.parse(rawEpics);
-  } catch(e) {}
-  // Load cards
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      const loaded = JSON.parse(raw);
-      const epicByTitle = Object.fromEntries(DEFAULT_CARDS.map(c => [c.title, c.epic]));
-      loaded.forEach(c => {
-        if (!c.epic   && epicByTitle[c.title])  c.epic   = epicByTitle[c.title];
-        if (!c.points) c.points = 4;
-      });
-      cards = loaded;
-      save();
-      return;
-    }
-  } catch(e) {}
-  cards = DEFAULT_CARDS.map(c => ({...c}));
+function saveState() {
+  localStorage.setItem(LS_KEY, JSON.stringify(S));
+  const el = document.getElementById('sync-text');
+  el.textContent = 'Saved ✓';
+  setTimeout(() => el.textContent = 'Saved', 1800);
 }
 
-function resetToDefaults() {
-  if (!confirm("Reset board to default data? All your changes will be lost.")) return;
-  cards = DEFAULT_CARDS.map(c => ({...c}));
-  EPICS = DEFAULT_EPICS.map(e => ({...e}));
-  save(); saveEpics();
-  renderAll();
-  toast("Board reset to defaults");
+/* ── UTILS ────────────────────────────────────────────────────── */
+function initials(name) { return name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(); }
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// ── EPIC MANAGER ─────────────────────────────────────────────────────────────
-function openEpicManager() {
-  renderEpicList();
-  document.getElementById("new-epic-name").value  = "";
-  document.getElementById("new-epic-color").value = "#0176D3";
-  document.getElementById("epic-overlay").classList.add("open");
-  document.getElementById("new-epic-name").focus();
+/* ── RENDER ───────────────────────────────────────────────────── */
+function render() {
+  renderSummary();
+  renderCapTable();
+  renderEpicTable();
+  renderStatusBar();
 }
-function closeEpicManager() {
-  document.getElementById("epic-overlay").classList.remove("open");
+
+function renderSummary() {
+  const members = Object.values(S.members);
+  const epics   = Object.values(S.epics);
+  const utils   = members.map(m => m.util || 0);
+  const avg     = utils.length ? Math.round(utils.reduce((a,b)=>a+b,0)/utils.length) : 0;
+  const over    = utils.filter(u => u > 100).length;
+  const under   = utils.filter(u => u > 0 && u < 80).length;
+  document.getElementById('s-members').textContent = members.length;
+  document.getElementById('s-epics').textContent   = epics.length;
+  document.getElementById('s-avg').textContent     = avg ? avg+'%' : '—';
+  document.getElementById('s-over').textContent    = over;
+  document.getElementById('s-under').textContent   = under;
+  const avgEl = document.getElementById('s-avg');
+  avgEl.className = 'sum-val ' + (avg>100?'c-red':avg>=80?'c-green':'c-amber');
 }
-function epicOverlayClick(e) {
-  if (e.target === document.getElementById("epic-overlay")) closeEpicManager();
-}
-function renderEpicList() {
-  const list = document.getElementById("epic-list");
-  list.innerHTML = "";
-  if (EPICS.length === 0) {
-    list.innerHTML = '<p style="color:#AAA;font-size:12px;font-style:italic;padding:10px 0;">No epics yet — add one below.</p>';
+
+function renderCapTable() {
+  const tbody = document.getElementById('cap-tbody');
+  const members = Object.values(S.members);
+  if (!members.length) {
+    tbody.innerHTML = `<tr><td colspan="6" style="padding:28px;text-align:center;color:#AAA;font-style:italic">No team members yet — click + Member to add.</td></tr>`;
     return;
   }
-  EPICS.forEach((ep, idx) => {
-    const row = document.createElement("div");
-    row.className = "epic-row";
-    row.id = `epic-row-${idx}`;
-    row.innerHTML = `
-      <span class="epic-swatch" style="background:${ep.color}"></span>
-      <span class="epic-row-name">${escHtml(ep.name)}</span>
-      <button class="btn-icon edit" onclick="startEditEpic(${idx})">&#x270E; Edit</button>
-      <button class="btn-icon del"  onclick="deleteEpic(${idx})">&#x2715; Delete</button>
-    `;
-    list.appendChild(row);
-  });
-}
-function startEditEpic(idx) {
-  const ep  = EPICS[idx];
-  const row = document.getElementById(`epic-row-${idx}`);
-  row.innerHTML = `
-    <input type="color" class="epic-row-color" id="edit-ep-color-${idx}" value="${ep.color}" title="Choose colour">
-    <input class="epic-row-input" id="edit-ep-name-${idx}" type="text" value="${escHtml(ep.name)}"
-           onkeydown="if(event.key==='Enter')commitEditEpic(${idx});if(event.key==='Escape')renderEpicList()">
-    <button class="btn-icon save-ep"   onclick="commitEditEpic(${idx})">&#10003; Save</button>
-    <button class="btn-icon cancel-ep" onclick="renderEpicList()">Cancel</button>
-  `;
-  document.getElementById(`edit-ep-name-${idx}`).focus();
-}
-function commitEditEpic(idx) {
-  const newName  = document.getElementById(`edit-ep-name-${idx}`).value.trim();
-  const newColor = document.getElementById(`edit-ep-color-${idx}`).value;
-  if (!newName) { alert("Epic name cannot be empty."); return; }
-  const oldName = EPICS[idx].name;
-  if (newName !== oldName) {
-    cards.forEach(c => { if (c.epic === oldName) c.epic = newName; });
-    save();
-  }
-  EPICS[idx] = { name: newName, color: newColor };
-  saveEpics(); renderEpicList(); populateModalSelects(); buildEpicPills(); renderBoard();
-  toast(`Epic updated: ${newName}`);
-}
-function deleteEpic(idx) {
-  const ep    = EPICS[idx];
-  const inUse = cards.filter(c => c.epic === ep.name).length;
-  const msg   = inUse > 0
-    ? `Delete epic "${ep.name}"? It is used by ${inUse} card(s) — those cards will have no epic.`
-    : `Delete epic "${ep.name}"? This cannot be undone.`;
-  if (!confirm(msg)) return;
-  if (inUse > 0) { cards.forEach(c => { if (c.epic === ep.name) c.epic = ""; }); save(); }
-  EPICS.splice(idx, 1);
-  saveEpics(); renderEpicList(); populateModalSelects(); buildEpicPills(); renderBoard();
-  toast(`Epic deleted: ${ep.name}`);
-}
-function saveNewEpic() {
-  const name  = document.getElementById("new-epic-name").value.trim();
-  const color = document.getElementById("new-epic-color").value;
-  if (!name) { alert("Please enter an epic name."); return; }
-  if (EPICS.find(e => e.name.toLowerCase() === name.toLowerCase())) { alert("An epic with that name already exists."); return; }
-  EPICS.push({ name, color });
-  saveEpics();
-  document.getElementById("new-epic-name").value  = "";
-  document.getElementById("new-epic-color").value = "#0176D3";
-  renderEpicList(); populateModalSelects(); buildEpicPills();
-  document.getElementById("new-epic-name").focus();
-  toast(`Epic added: ${name}`);
-}
-
-// ── CAPACITY PLANNER ─────────────────────────────────────────────────────────
-function openCapacityPlanner() {
-  loadCapacity();
-  renderCapacityPlanner();
-  document.getElementById("cap-overlay").classList.add("open");
-}
-function closeCapacityPlanner() {
-  document.getElementById("cap-overlay").classList.remove("open");
-}
-function capOverlayClick(e) {
-  if (e.target === document.getElementById("cap-overlay")) closeCapacityPlanner();
-}
-
-function getMemberPts(member, statusFilter) {
-  return cards
-    .filter(c => c.owner === member && (statusFilter === null || c.status === statusFilter))
-    .reduce((sum, c) => sum + (parseInt(c.points) || 1), 0);
-}
-
-function renderCapacityPlanner() {
-  // Sprint label from first card with a sprint value
-  const sprint = (cards.find(c => c.sprint) || {}).sprint || "Sprint 1";
-  document.getElementById("cap-sprint-label").textContent = sprint;
-
-  let totalCap = 0, totalAssigned = 0, totalActive = 0, totalDone = 0;
-  const tbody = document.getElementById("cap-tbody");
-  tbody.innerHTML = "";
-
-  MEMBERS.forEach(m => {
-    const cap      = memberCapacity[m] || DEFAULT_CAP;
-    const assigned = getMemberPts(m, null);
-    const active   = getMemberPts(m, "IN PROGRESS") + getMemberPts(m, "IN REVIEW");
-    const done     = getMemberPts(m, "DONE");
-    const pct      = cap > 0 ? Math.round((assigned / cap) * 100) : 0;
-    const barW     = Math.min(pct, 100);
-    const barClr   = pct > 100 ? "#BA0517" : pct >= 80 ? "#FE9339" : "#2E844A";
-    const pctClr   = pct > 100 ? "#BA0517" : pct >= 80 ? "#A86403" : "#2E844A";
-    const mhex     = MEMBER_HEX[m] || "#888";
-
-    totalCap      += cap;
-    totalAssigned += assigned;
-    totalActive   += active;
-    totalDone     += done;
-
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
+  tbody.innerHTML = members.map(m => {
+    const util = m.util || 0;
+    const barW = Math.min(util, 100);
+    const barC = util > 100 ? '#BA0517' : util >= 80 ? '#2E844A' : '#FE9339';
+    const pctC = util > 100 ? '#BA0517' : util >= 80 ? '#2E844A' : '#A86403';
+    const statusLabel = util > 100 ? '🔴 Over'  : util >= 80 ? '🟢 On Track' : util > 0 ? '🟡 Under' : '⚪ Not Set';
+    // epics assigned to this member (owner match)
+    const memberEpics = Object.values(S.epics).filter(e => (e.owner||'').toLowerCase().includes(m.name.split(' ')[0].toLowerCase()));
+    const epicChips = memberEpics.map(e => `<span class="epic-chip" style="background:${e.color}">${escHtml(e.name.split(/[\s–—]/)[0])}</span>`).join('');
+    return `<tr>
       <td>
-        <div class="cap-member">
-          <span class="cap-dot" style="background:${mhex}"></span>
-          <span style="font-weight:600;color:${mhex}">${escHtml(m)}</span>
-        </div>
-      </td>
-      <td class="r">
-        <input class="cap-input" type="number" min="1" max="999" value="${cap}"
-          onchange="updateMemberCap(${JSON.stringify(m)}, this.value)"
-          title="Edit sprint capacity for ${escHtml(m)}">
-        <span style="font-size:10px;color:#999;margin-left:2px">hrs</span>
-      </td>
-      <td class="r" style="font-weight:700">${assigned} <span style="color:#999;font-weight:400;font-size:10px">hrs</span></td>
-      <td class="r" style="color:#E65100;font-weight:700">${active} <span style="color:#999;font-weight:400;font-size:10px">hrs</span></td>
-      <td class="r" style="color:#2E844A;font-weight:700">${done} <span style="color:#999;font-weight:400;font-size:10px">hrs</span></td>
-      <td>
-        <div class="cap-bar-cell">
-          <div class="cap-bar-wrap">
-            <div class="cap-bar" style="width:${barW}%;background:${barClr}"></div>
+        <div class="member-cell">
+          <div class="member-avatar" style="background:${m.color}">${initials(m.name)}</div>
+          <div>
+            <div class="member-name">${escHtml(m.name)}</div>
+            ${m.role ? `<div class="member-role">${escHtml(m.role)}</div>` : ''}
           </div>
-          <span class="cap-pct" style="color:${pctClr}">${pct}%${pct > 100 ? ' &#9888;' : ''}</span>
         </div>
-      </td>`;
-    tbody.appendChild(tr);
-  });
+      </td>
+      <td style="text-align:center">
+        <input class="util-input" type="number" min="0" max="200" value="${util}"
+          onchange="updateMemberUtil('${m.id}', this.value)"
+          title="Edit utilization for ${escHtml(m.name)}"> %
+      </td>
+      <td><div class="epic-chips">${epicChips || '<span style="color:#BBB;font-size:11px">—</span>'}</div></td>
+      <td>
+        <div class="bar-cell">
+          <div class="bar-wrap"><div class="bar-fill" style="width:${barW}%;background:${barC}"></div></div>
+          <span class="bar-pct" style="color:${pctC}">${util}%${util>100?' ⚠':''}${util===0?' —':''}</span>
+        </div>
+      </td>
+      <td style="font-size:11px;font-weight:700">${statusLabel}</td>
+      <td style="text-align:right">
+        <button onclick="openEditMemberModal('${m.id}')" style="background:#EBF4FB;border:1px solid #90C4ED;color:var(--blue);border-radius:5px;padding:3px 9px;cursor:pointer;font-size:11px;font-weight:700">Edit</button>
+      </td>
+    </tr>`;
+  }).join('');
 
-  // Totals row
-  const tPct    = totalCap > 0 ? Math.round((totalAssigned / totalCap) * 100) : 0;
-  const tBarClr = tPct > 100 ? "#BA0517" : tPct >= 80 ? "#FE9339" : "#2E844A";
-  const totTr   = document.createElement("tr");
-  totTr.className = "cap-total";
-  totTr.innerHTML = `
-    <td>&#127942; TEAM TOTAL</td>
-    <td class="r">${totalCap} hrs</td>
-    <td class="r">${totalAssigned} hrs</td>
-    <td class="r" style="color:#E65100">${totalActive} hrs</td>
-    <td class="r" style="color:#2E844A">${totalDone} hrs</td>
+  // Total row
+  const total = members.reduce((s,m) => s+(m.util||0), 0);
+  const avgTot = members.length ? Math.round(total/members.length) : 0;
+  const tBarC = avgTot>100?'#BA0517':avgTot>=80?'#2E844A':'#FE9339';
+  tbody.innerHTML += `<tr class="total-row">
+    <td>🏆 TEAM AVERAGE</td>
+    <td style="text-align:center;font-weight:800">${avgTot}%</td>
+    <td></td>
+    <td><div class="bar-cell">
+      <div class="bar-wrap"><div class="bar-fill" style="width:${Math.min(avgTot,100)}%;background:${tBarC}"></div></div>
+      <span class="bar-pct" style="color:${tBarC};font-size:13px">${avgTot}%</span>
+    </div></td>
+    <td colspan="2"></td>
+  </tr>`;
+}
+
+function renderEpicTable() {
+  const tbody = document.getElementById('epic-tbody');
+  const epics = Object.values(S.epics);
+  if (!epics.length) {
+    tbody.innerHTML = `<tr><td colspan="6" style="padding:28px;text-align:center;color:#AAA;font-style:italic">No epics yet — click + Epic to add.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = epics.map(e => `<tr>
     <td>
-      <div class="cap-bar-cell">
-        <div class="cap-bar-wrap">
-          <div class="cap-bar" style="width:${Math.min(tPct,100)}%;background:${tBarClr}"></div>
-        </div>
-        <span class="cap-pct" style="color:${tBarClr};font-size:12px">${tPct}%${tPct > 100 ? ' &#9888;' : ''}</span>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="width:10px;height:10px;border-radius:50%;background:${e.color};flex-shrink:0"></div>
+        <span style="font-weight:700">${escHtml(e.name)}</span>
       </div>
-    </td>`;
-  tbody.appendChild(totTr);
-
-  // Summary strip values
-  document.getElementById("cap-sum-cap").textContent      = totalCap + " hrs";
-  document.getElementById("cap-sum-assigned").textContent = totalAssigned + " hrs";
-  document.getElementById("cap-sum-active").textContent   = totalActive + " hrs";
-  document.getElementById("cap-sum-done").textContent     = totalDone + " hrs";
-  document.getElementById("cap-sum-pct").textContent      = tPct + "%";
-  document.getElementById("cap-sum-pct").style.color      = tBarClr;
+    </td>
+    <td>${e.owner ? `<span style="font-weight:600;color:var(--navy)">${escHtml(e.owner)}</span>` : '<span style="color:#BBB">—</span>'}</td>
+    <td style="text-align:center">
+      <input class="alloc-input" type="text" value="${escHtml(e.util||'')}"
+        onchange="updateEpicUtil('${e.id}', this.value)"
+        placeholder="e.g. 50%">
+    </td>
+    <td><span style="font-size:11px;font-weight:700;color:${e.status==='Done'?'#2E844A':e.status==='Blocked'?'#BA0517':'#A86403'}">${escHtml(e.status||'—')}</span></td>
+    <td style="font-size:12px;color:#888;font-style:italic">${escHtml(e.notes||'')}</td>
+    <td style="text-align:right">
+      <button onclick="openEditEpicModal('${e.id}')" style="background:#EBF4FB;border:1px solid #90C4ED;color:var(--blue);border-radius:5px;padding:3px 9px;cursor:pointer;font-size:11px;font-weight:700">Edit</button>
+    </td>
+  </tr>`).join('');
 }
 
-function updateMemberCap(member, value) {
-  const v = parseInt(value);
-  if (isNaN(v) || v < 1) return;
-  memberCapacity[member] = v;
-  saveCapacity();
-  renderCapacityPlanner();
-  toast(`Capacity: ${member.split(" ")[0]} → ${v} hrs`);
+function renderStatusBar() {
+  const members = Object.values(S.members);
+  const epics   = Object.values(S.epics);
+  document.getElementById('sb-info').textContent =
+    `${members.length} members · ${epics.length} epics · Last saved: ${new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}`;
 }
 
-// ── RENDER ───────────────────────────────────────────────────────────────────
-function renderAll() { renderBoard(); updateStatusBar(); }
-
-function renderBoard() {
-  const board = document.getElementById("board");
-  board.innerHTML = "";
-  COLUMNS.forEach(col => board.appendChild(buildColumn(col)));
-  updateVisibleCount();
+/* ── INLINE UPDATES ───────────────────────────────────────────── */
+function updateMemberUtil(id, val) {
+  const v = parseInt(val);
+  if (isNaN(v) || v < 0) return;
+  S.members[id].util = v;
+  saveState(); render();
+  toast(`Updated: ${S.members[id].name} → ${v}%`);
+}
+function updateEpicUtil(id, val) {
+  S.epics[id].util = val.trim();
+  saveState();
+  toast(`Epic updated`);
 }
 
-function buildColumn(status) {
-  const colCards = cards.filter(c => c.status === status);
-  const col = document.createElement("div");
-  col.className = "column";
-  col.dataset.col = status;
-  col.innerHTML = `
-    <div class="col-header" style="background:${COL_COLORS[status]}">
-      <span class="col-name">${status}</span>
-      <span class="col-count" id="cnt-${esc(status)}">${colCards.length}</span>
-      <button class="col-add" title="Add card to ${status}" onclick="openAddModal('${status}')">+</button>
-    </div>
-    <div class="col-body" id="col-${esc(status)}">
-      <div class="drop-ghost" id="ghost-${esc(status)}"></div>
-    </div>
-  `;
-  const body = col.querySelector(".col-body");
-  body.addEventListener("dragover",  e => onDragOver(e, status));
-  body.addEventListener("dragleave", e => onDragLeave(e, col));
-  body.addEventListener("drop",      e => onDrop(e, status));
-  colCards.forEach(card => body.appendChild(buildCard(card)));
-  if (colCards.length === 0) {
-    const emp = document.createElement("div");
-    emp.className = "col-empty";
-    emp.textContent = "No cards yet — drag here or click +";
-    body.appendChild(emp);
-  }
-  return col;
-}
+/* ── MEMBER MODAL ─────────────────────────────────────────────── */
+let _editMemberId = null;
+let _mbColor = PALETTE[0];
 
-function buildCard(card) {
-  const mhex   = MEMBER_HEX[card.owner] || "#888";
-  const priCls = { High:"tag-high", Medium:"tag-medium", Low:"tag-low" }[card.priority] || "tag-low";
-  const pts    = card.points || 1;
-  const div    = document.createElement("div");
-  div.className  = "card";
-  div.draggable  = true;
-  div.dataset.id = card.id;
-  div.style.borderLeftColor = mhex;
-  div.innerHTML = `
-    <div class="card-body">
-      <div class="card-title">${escHtml(card.title)}</div>
-      <div class="card-owner">
-        <span class="owner-dot" style="background:${mhex}"></span>
-        <span style="color:${mhex};font-size:11px;font-weight:700">${escHtml(card.owner)}</span>
-      </div>
-      <div class="card-tags">
-        <span class="tag ${priCls}">${escHtml(card.priority)}</span>
-        <span class="tag tag-sprint">${escHtml(card.sprint)}</span>
-        <span class="tag tag-pts">${pts}h</span>
-        ${card.epic ? `<span class="tag tag-epic" style="background:${epicHex(card.epic)}">${escHtml(card.epic)}</span>` : ""}
-      </div>
-      ${card.notes ? `<div class="card-notes">${escHtml(card.notes)}</div>` : ""}
-    </div>
-    <div class="card-footer">
-      <button class="card-edit" onclick="openEditModal('${card.id}')">&#x270E; Edit</button>
-    </div>
-  `;
-  div.addEventListener("dragstart", e => onDragStart(e, card.id));
-  div.addEventListener("dragend",   onDragEnd);
-  if (!matchesFilter(card)) div.classList.add("hidden");
-  return div;
+function openAddMemberModal() {
+  _editMemberId = null; _mbColor = PALETTE[0];
+  document.getElementById('member-modal-title').textContent = '👤 Add Team Member';
+  document.getElementById('mb-name').value = '';
+  document.getElementById('mb-role').value = '';
+  document.getElementById('mb-util').value = '80';
+  document.getElementById('mb-delete-btn').style.display = 'none';
+  renderSwatches('mb-swatches', _mbColor, c => { _mbColor=c; renderSwatches('mb-swatches',_mbColor,arguments.callee); });
+  document.getElementById('member-overlay').classList.add('open');
+  document.getElementById('mb-name').focus();
 }
-
-// ── FILTER ───────────────────────────────────────────────────────────────────
-function matchesFilter(card) {
-  if (activeMembers.size > 0 && !activeMembers.has(card.owner)) return false;
-  if (activeEpics.size   > 0 && !activeEpics.has(card.epic))   return false;
-  if (currentFilter.priority !== "all" && card.priority !== currentFilter.priority) return false;
-  if (currentFilter.search) {
-    const q = currentFilter.search.toLowerCase();
-    if (!(card.title.toLowerCase().includes(q) ||
-          card.owner.toLowerCase().includes(q) ||
-          (card.epic||"").toLowerCase().includes(q) ||
-          (card.notes||"").toLowerCase().includes(q))) return false;
-  }
-  return true;
+function openEditMemberModal(id) {
+  _editMemberId = id;
+  const m = S.members[id]; if(!m) return;
+  _mbColor = m.color || PALETTE[0];
+  document.getElementById('member-modal-title').textContent = '✎ Edit Member';
+  document.getElementById('mb-name').value = m.name;
+  document.getElementById('mb-role').value = m.role||'';
+  document.getElementById('mb-util').value = m.util||'';
+  document.getElementById('mb-delete-btn').style.display = '';
+  renderSwatches('mb-swatches', _mbColor, c => { _mbColor=c; renderSwatches('mb-swatches',_mbColor,arguments.callee); });
+  document.getElementById('member-overlay').classList.add('open');
 }
-
-function applyFilters() {
-  currentFilter.priority = document.getElementById("priority-filter").value;
-  currentFilter.search   = document.getElementById("search-input").value.trim();
-  document.querySelectorAll(".card").forEach(el => {
-    const card = cards.find(c => c.id === el.dataset.id);
-    if (card) el.classList.toggle("hidden", !matchesFilter(card));
-  });
-  updateVisibleCount();
-}
-
-function updateVisibleCount() {
-  const visible = cards.filter(matchesFilter).length;
-  const total   = cards.length;
-  document.getElementById("visible-count").textContent =
-    visible === total ? `${total} cards` : `${visible} / ${total} cards`;
-}
-
-// ── MEMBER PILLS ─────────────────────────────────────────────────────────────
-function buildMemberPills() {
-  const wrap = document.getElementById("member-pills");
-  wrap.innerHTML = "";
-  MEMBERS.forEach(m => {
-    const btn = document.createElement("button");
-    btn.className = "pill on";
-    btn.style.background = MEMBER_HEX[m];
-    btn.textContent = m.split(" ")[0];
-    btn.title = m;
-    btn.dataset.member = m;
-    btn.onclick = () => togglePill(activeMembers, m, btn);
-    wrap.appendChild(btn);
-  });
-}
-
-// ── EPIC PILLS ────────────────────────────────────────────────────────────────
-function buildEpicPills() {
-  const wrap = document.getElementById("epic-pills");
-  wrap.innerHTML = "";
-  EPICS.forEach(ep => {
-    const btn   = document.createElement("button");
-    const isOff = activeEpics.has(ep.name);
-    btn.className = "pill " + (isOff ? "off" : "on");
-    btn.style.background = ep.color;
-    const short = ep.name.length > 13 ? ep.name.split(/[\s&–—]/)[0] : ep.name;
-    btn.textContent = short;
-    btn.title = ep.name;
-    btn.dataset.epic = ep.name;
-    btn.onclick = () => togglePill(activeEpics, ep.name, btn);
-    wrap.appendChild(btn);
-  });
-}
-
-function togglePill(activeSet, value, btn) {
-  if (activeSet.has(value)) { activeSet.delete(value); btn.classList.replace("off","on"); }
-  else                      { activeSet.add(value);    btn.classList.replace("on","off"); }
-  applyFilters();
-}
-
-// ── DRAG & DROP ───────────────────────────────────────────────────────────────
-function onDragStart(e, id) {
-  dragId = id;
-  e.dataTransfer.effectAllowed = "move";
-  setTimeout(() => {
-    const el = document.querySelector(`.card[data-id="${id}"]`);
-    if (el) el.classList.add("dragging");
-  }, 0);
-}
-function onDragEnd() {
-  dragId = null;
-  document.querySelectorAll(".card.dragging").forEach(el => el.classList.remove("dragging"));
-  document.querySelectorAll(".column.drag-target").forEach(el => el.classList.remove("drag-target"));
-  document.querySelectorAll(".drop-ghost.show").forEach(el => el.classList.remove("show"));
-}
-function onDragOver(e, status) {
-  e.preventDefault(); e.dataTransfer.dropEffect = "move";
-  const col = document.querySelector(`.column[data-col="${status}"]`);
-  if (col) col.classList.add("drag-target");
-  const ghost = document.getElementById(`ghost-${esc(status)}`);
-  if (ghost) ghost.classList.add("show");
-}
-function onDragLeave(e, colEl) {
-  if (!colEl.contains(e.relatedTarget)) {
-    colEl.classList.remove("drag-target");
-    const ghost = colEl.querySelector(".drop-ghost");
-    if (ghost) ghost.classList.remove("show");
-  }
-}
-function onDrop(e, status) {
-  e.preventDefault();
-  if (!dragId) return;
-  const card = cards.find(c => c.id === dragId);
-  if (card && card.status !== status) {
-    card.status = status;
-    save(); renderAll();
-    toast(`Moved to ${status}`);
-  }
-  onDragEnd();
-}
-
-// ── MODAL ────────────────────────────────────────────────────────────────────
-function populateModalSelects() {
-  document.getElementById("f-owner").innerHTML =
-    MEMBERS.map(m => `<option value="${escHtml(m)}">${escHtml(m)}</option>`).join("");
-  document.getElementById("f-status").innerHTML =
-    COLUMNS.map(c => `<option value="${escHtml(c)}">${escHtml(c)}</option>`).join("");
-  document.getElementById("f-epic").innerHTML =
-    `<option value="">— None —</option>` +
-    EPICS.map(e => `<option value="${escHtml(e.name)}">${escHtml(e.name)}</option>`).join("");
-}
-
-function openAddModal(status) {
-  editingId = null;
-  document.getElementById("modal-title-label").textContent = "Add New Card";
-  document.getElementById("btn-delete").style.display = "none";
-  document.getElementById("f-title").value    = "";
-  document.getElementById("f-desc").value     = "";
-  document.getElementById("f-notes").value    = "";
-  document.getElementById("f-sprint").value   = "Sprint 1";
-  document.getElementById("f-priority").value = "Medium";
-  document.getElementById("f-points").value   = "6";
-  document.getElementById("f-owner").value    = MEMBERS[0];
-  document.getElementById("f-status").value   = status || "TO DO";
-  document.getElementById("f-epic").value     = "";
-  document.getElementById("overlay").classList.add("open");
-  document.getElementById("f-title").focus();
-}
-
-function openEditModal(id) {
-  const card = cards.find(c => c.id === id);
-  if (!card) return;
-  editingId = id;
-  document.getElementById("modal-title-label").textContent = "Edit Card";
-  document.getElementById("btn-delete").style.display = "";
-  document.getElementById("f-title").value    = card.title;
-  document.getElementById("f-desc").value     = card.desc   || "";
-  document.getElementById("f-notes").value    = card.notes  || "";
-  document.getElementById("f-sprint").value   = card.sprint;
-  document.getElementById("f-priority").value = card.priority;
-  document.getElementById("f-points").value   = card.points || 3;
-  document.getElementById("f-owner").value    = card.owner;
-  document.getElementById("f-status").value   = card.status;
-  document.getElementById("f-epic").value     = card.epic   || "";
-  document.getElementById("overlay").classList.add("open");
-  document.getElementById("f-title").focus();
-}
-
-function closeModal() { document.getElementById("overlay").classList.remove("open"); }
-function overlayClick(e) { if (e.target === document.getElementById("overlay")) closeModal(); }
-
-function saveModal() {
-  const title = document.getElementById("f-title").value.trim();
-  if (!title) { alert("Please enter a work item name."); return; }
-  if (editingId) {
-    const card = cards.find(c => c.id === editingId);
-    if (card) {
-      card.title    = title;
-      card.desc     = document.getElementById("f-desc").value.trim();
-      card.notes    = document.getElementById("f-notes").value.trim();
-      card.sprint   = document.getElementById("f-sprint").value.trim() || "Sprint 1";
-      card.priority = document.getElementById("f-priority").value;
-      card.points   = parseInt(document.getElementById("f-points").value) || 1;
-      card.owner    = document.getElementById("f-owner").value;
-      card.status   = document.getElementById("f-status").value;
-      card.epic     = document.getElementById("f-epic").value;
-    }
-    toast("Card updated");
-  } else {
-    cards.push({
-      id:       "c" + Date.now(),
-      title,
-      desc:     document.getElementById("f-desc").value.trim(),
-      notes:    document.getElementById("f-notes").value.trim(),
-      sprint:   document.getElementById("f-sprint").value.trim() || "Sprint 1",
-      priority: document.getElementById("f-priority").value,
-      points:   parseInt(document.getElementById("f-points").value) || 1,
-      owner:    document.getElementById("f-owner").value,
-      status:   document.getElementById("f-status").value,
-      epic:     document.getElementById("f-epic").value,
+function closeMemberModal() { document.getElementById('member-overlay').classList.remove('open'); }
+function saveMember() {
+  const name = document.getElementById('mb-name').value.trim();
+  if (!name) { document.getElementById('mb-name').style.borderColor='#BA0517'; return; }
+  if (_editMemberId) {
+    Object.assign(S.members[_editMemberId], {
+      name, role: document.getElementById('mb-role').value.trim(),
+      util: parseInt(document.getElementById('mb-util').value)||0,
+      color: _mbColor
     });
-    toast("Card added");
+    toast('Member updated');
+  } else {
+    const id = 'm'+Date.now();
+    S.members[id] = { id, name, role: document.getElementById('mb-role').value.trim(), util: parseInt(document.getElementById('mb-util').value)||0, color: _mbColor };
+    toast('Member added: '+name);
   }
-  save(); renderAll(); closeModal();
+  saveState(); render(); closeMemberModal();
+}
+function deleteMember() {
+  if (!_editMemberId) return;
+  if (!confirm(`Remove ${S.members[_editMemberId]?.name}?`)) return;
+  delete S.members[_editMemberId];
+  saveState(); render(); closeMemberModal();
+  toast('Member removed');
 }
 
-function deleteCard() {
-  if (!editingId) return;
-  if (!confirm("Delete this card? This cannot be undone.")) return;
-  cards = cards.filter(c => c.id !== editingId);
-  save(); renderAll(); closeModal();
-  toast("Card deleted");
-}
+/* ── EPIC MODAL ───────────────────────────────────────────────── */
+let _editEpicId = null;
+let _epColor = PALETTE[0];
 
-// ── EXPORT / IMPORT ───────────────────────────────────────────────────────────
-function exportJSON() {
-  const data = { exported: new Date().toISOString(), cards };
-  const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "AI_Delivery_Kanban_" + new Date().toISOString().slice(0,10) + ".json";
-  a.click();
-  toast("Board exported as JSON");
+function openEpicModal() {
+  _editEpicId = null; _epColor = PALETTE[0];
+  document.getElementById('epic-modal-title').textContent = '🎯 Add Epic';
+  ['ep-name','ep-owner','ep-util','ep-status','ep-notes'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('ep-delete-btn').style.display = 'none';
+  renderSwatches('ep-swatches', _epColor, c => { _epColor=c; renderSwatches('ep-swatches',_epColor,arguments.callee); });
+  document.getElementById('epic-overlay').classList.add('open');
+  document.getElementById('ep-name').focus();
 }
-function importJSON(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    try {
-      const data = JSON.parse(ev.target.result);
-      const imported = data.cards || data;
-      if (!Array.isArray(imported)) throw new Error("Invalid format");
-      if (!confirm(`Import ${imported.length} cards? This will replace the current board.`)) return;
-      cards = imported;
-      save(); renderAll();
-      toast(`Imported ${imported.length} cards`);
-    } catch(err) { alert("Could not read file: " + err.message); }
+function openEditEpicModal(id) {
+  _editEpicId = id;
+  const e = S.epics[id]; if(!e) return;
+  _epColor = e.color || PALETTE[0];
+  document.getElementById('epic-modal-title').textContent = '✎ Edit Epic';
+  document.getElementById('ep-name').value   = e.name;
+  document.getElementById('ep-owner').value  = e.owner||'';
+  document.getElementById('ep-util').value   = e.util||'';
+  document.getElementById('ep-status').value = e.status||'';
+  document.getElementById('ep-notes').value  = e.notes||'';
+  document.getElementById('ep-delete-btn').style.display = '';
+  renderSwatches('ep-swatches', _epColor, c => { _epColor=c; renderSwatches('ep-swatches',_epColor,arguments.callee); });
+  document.getElementById('epic-overlay').classList.add('open');
+}
+function closeEpicModal() { document.getElementById('epic-overlay').classList.remove('open'); }
+function saveEpic() {
+  const name = document.getElementById('ep-name').value.trim();
+  if (!name) { document.getElementById('ep-name').style.borderColor='#BA0517'; return; }
+  const data = {
+    name, owner: document.getElementById('ep-owner').value.trim(),
+    util: document.getElementById('ep-util').value.trim(),
+    status: document.getElementById('ep-status').value.trim(),
+    notes: document.getElementById('ep-notes').value.trim(),
+    color: _epColor
   };
-  reader.readAsText(file);
-  e.target.value = "";
+  if (_editEpicId) { Object.assign(S.epics[_editEpicId], data); toast('Epic updated'); }
+  else { const id='e'+Date.now(); S.epics[id]={id,...data}; toast('Epic added: '+name); }
+  saveState(); render(); closeEpicModal();
+}
+function deleteEpic() {
+  if (!_editEpicId) return;
+  if (!confirm(`Delete epic "${S.epics[_editEpicId]?.name}"?`)) return;
+  delete S.epics[_editEpicId];
+  saveState(); render(); closeEpicModal();
+  toast('Epic deleted');
 }
 
-// ── STATUS BAR ───────────────────────────────────────────────────────────────
-function updateStatusBar() {
-  const counts = COLUMNS.map(c => {
-    const n   = cards.filter(x => x.status === c).length;
-    const pts = cards.filter(x => x.status === c).reduce((s,x) => s + (x.points||1), 0);
-    return `${c}: ${n} (${pts}h)`;
-  });
-  document.getElementById("sb-total").textContent =
-    `Total ${cards.length} cards · ` + counts.join("  ·  ");
+/* ── SWATCHES ─────────────────────────────────────────────────── */
+function renderSwatches(containerId, chosen, onPick) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = PALETTE.map(c =>
+    `<div class="swatch${c===chosen?' active':''}" style="background:${c}" onclick="(${onPick.toString()})('${c}')"></div>`
+  ).join('');
 }
 
-// ── TOAST ─────────────────────────────────────────────────────────────────────
-let toastTimer;
+/* ── EXPORT CSV ───────────────────────────────────────────────── */
+function exportCSV() {
+  const members = Object.values(S.members);
+  const epics   = Object.values(S.epics);
+  const mRows = members.map(m => [m.name, m.role||'', (m.util||0)+'%', m.util>100?'Over':m.util>=80?'On Track':'Under']);
+  const eRows = epics.map(e => [e.name, e.owner||'', e.util||'', e.status||'', e.notes||'']);
+  let csv = 'TEAM CAPACITY\r\nName,Role,Utilization %,Status\r\n';
+  csv += mRows.map(r=>r.map(c=>`"${(c+'').replace(/"/g,'""')}"`).join(',')).join('\r\n');
+  csv += '\r\n\r\nEPIC ALLOCATION\r\nEpic,Owner,Target Utilization %,Status,Notes\r\n';
+  csv += eRows.map(r=>r.map(c=>`"${(c+'').replace(/"/g,'""')}"`).join(',')).join('\r\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,﻿'+encodeURIComponent(csv);
+  a.download = 'AI_Delivery_Capacity_Planner_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+  toast('CSV exported');
+}
+
+/* ── TOAST ────────────────────────────────────────────────────── */
+let _toastTimer;
 function toast(msg) {
-  const el = document.getElementById("toast");
-  el.textContent = msg;
-  el.classList.add("show");
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove("show"), 2200);
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(()=>el.classList.remove('show'), 2200);
 }
 
-// ── UTILS ─────────────────────────────────────────────────────────────────────
-function esc(str)     { return str.replace(/\s+/g, "-"); }
-function escHtml(str) {
-  return String(str)
-    .replace(/&/g,"&amp;").replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
-}
-
-// ── KEYBOARD ─────────────────────────────────────────────────────────────────
-document.addEventListener("keydown", e => {
-  if (e.key === "Escape") { closeModal(); closeEpicManager(); closeCapacityPlanner(); }
+/* ── KEYBOARD ESC ─────────────────────────────────────────────── */
+document.addEventListener('keydown', e => {
+  if (e.key==='Escape') { closeMemberModal(); closeEpicModal(); }
 });
 
-// ── INIT ─────────────────────────────────────────────────────────────────────
-(function init() {
-  loadCapacity();
-  loadFromStorage();
-  populateModalSelects();
-  buildMemberPills();
-  buildEpicPills();
-  renderAll();
-})();
+/* ── BOOT ─────────────────────────────────────────────────────── */
+loadState();
+render();
 </script>
 </body>
 </html>
