@@ -44,25 +44,25 @@ body { font-family: 'Salesforce Sans', 'Segoe UI', system-ui, -apple-system, san
 .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: #34d399; animation: pulse 2s infinite; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
 
-/* ── PAGE BODY ───────────────────────────────────────────────── */
-.page { padding: 24px; max-width: 1200px; margin: 0 auto; }
+/* ── PAGE ────────────────────────────────────────────────────── */
+.page { padding: 20px 24px; max-width: 1400px; margin: 0 auto; }
 
 /* ── SUMMARY STRIP ───────────────────────────────────────────── */
 .summary-strip {
   display: flex; gap: 0;
   background: #fff; border: 1px solid #E0E0E0; border-radius: 10px;
-  overflow: hidden; margin-bottom: 22px;
+  overflow: hidden; margin-bottom: 20px;
   box-shadow: 0 1px 4px rgba(0,0,0,.07);
 }
-.sum-item { flex: 1; text-align: center; padding: 16px 10px; border-right: 1px solid #E0E0E0; position: relative; }
+.sum-item { flex: 1; text-align: center; padding: 14px 10px; border-right: 1px solid #E0E0E0; position: relative; }
 .sum-item:last-child { border-right: none; }
 .sum-item::after { content:''; position:absolute; bottom:0; left:0; right:0; height:3px; }
 .sum-item.s-members::after  { background: var(--blue); }
 .sum-item.s-epics::after    { background: var(--teal); }
+.sum-item.s-wi::after       { background: #9050E9; }
+.sum-item.s-inprog::after   { background: #FE9339; }
 .sum-item.s-avg::after      { background: var(--amber); }
-.sum-item.s-over::after     { background: var(--red); }
-.sum-item.s-under::after    { background: #FE9339; }
-.sum-val { font-size: 26px; font-weight: 800; line-height: 1; margin-bottom: 4px; color: var(--navy); }
+.sum-val { font-size: 24px; font-weight: 800; line-height: 1; margin-bottom: 4px; color: var(--navy); }
 .sum-val.c-red   { color: var(--red); }
 .sum-val.c-amber { color: var(--amber); }
 .sum-val.c-green { color: var(--green); }
@@ -72,89 +72,107 @@ body { font-family: 'Salesforce Sans', 'Segoe UI', system-ui, -apple-system, san
 /* ── SECTION CARD ────────────────────────────────────────────── */
 .section-card {
   background: #fff; border-radius: 10px; border: 1px solid #E0E0E0;
-  box-shadow: 0 1px 4px rgba(0,0,0,.07); overflow: hidden; margin-bottom: 22px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.07); overflow: hidden; margin-bottom: 20px;
 }
 .section-head {
   background: var(--navy); color: #fff;
-  padding: 12px 20px; display: flex; align-items: center; gap: 10px;
+  padding: 11px 20px; display: flex; align-items: center; gap: 10px;
 }
-.section-head h2 { font-size: 13px; font-weight: 700; flex: 1; letter-spacing: .2px; }
-.section-body { padding: 18px 20px; }
-
-/* ── CAPACITY TABLE ──────────────────────────────────────────── */
-.cap-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.cap-table thead th {
-  font-size: 10px; font-weight: 800; color: #666;
-  text-transform: uppercase; letter-spacing: .6px;
-  padding: 8px 12px; border-bottom: 2px solid #EEE;
-  text-align: left; white-space: nowrap; background: #FAFAFA;
+.section-head h2 { font-size: 13px; font-weight: 700; flex: 1; }
+.section-head .sh-btn {
+  background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.3);
+  color: #fff; padding: 3px 11px; border-radius: 5px; cursor: pointer;
+  font-size: 11px; font-weight: 600;
 }
-.cap-table thead th.r { text-align: right; }
-.cap-table thead th.c { text-align: center; }
-.cap-table tbody td { padding: 10px 12px; border-bottom: 1px solid #F5F5F5; vertical-align: middle; }
-.cap-table tbody tr:last-child td { border-bottom: none; }
-.cap-table tbody tr:hover td { background: #FAFAFA; }
-.cap-table tr.total-row td { font-weight: 800; border-top: 2px solid #DDD; background: #F3F2F2; }
+.section-head .sh-btn:hover { background: rgba(255,255,255,.28); }
 
-.member-cell { display: flex; align-items: center; gap: 10px; }
+/* ── MEMBER ROWS ─────────────────────────────────────────────── */
+.member-row {
+  border-bottom: 1px solid #EBEBEB;
+}
+.member-row:last-child { border-bottom: none; }
+
+.member-summary {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 20px; cursor: pointer;
+  transition: background .12s;
+}
+.member-summary:hover { background: #F8F8F8; }
+
 .member-avatar {
-  width: 34px; height: 34px; border-radius: 50%;
+  width: 36px; height: 36px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 800; color: #fff; flex-shrink: 0;
+  font-size: 13px; font-weight: 800; color: #fff; flex-shrink: 0;
 }
-.member-name  { font-size: 13px; font-weight: 700; }
-.member-role  { font-size: 10.5px; color: #888; margin-top: 1px; }
+.member-info { flex: 1; min-width: 0; }
+.member-name { font-size: 13px; font-weight: 700; color: var(--navy); }
+.member-role { font-size: 10.5px; color: #888; margin-top: 1px; }
 
-/* utilization input */
+.member-util-wrap { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .util-input {
-  width: 70px; border: 1.5px solid #DDD; border-radius: 6px;
-  padding: 5px 8px; font-size: 13px; font-family: inherit;
+  width: 62px; border: 1.5px solid #DDD; border-radius: 6px;
+  padding: 4px 7px; font-size: 13px; font-family: inherit;
   outline: none; text-align: center; font-weight: 700; color: var(--navy);
   transition: border-color .15s;
 }
 .util-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(1,118,211,.12); }
-
-/* bar */
-.bar-wrap { width: 120px; height: 8px; background: #E5E5E5; border-radius: 4px; overflow: hidden; flex-shrink: 0; }
-.bar-fill { height: 100%; border-radius: 4px; transition: width .4s ease, background .4s ease; }
-.bar-cell { display: flex; align-items: center; gap: 9px; }
-.bar-pct  { font-size: 12px; font-weight: 800; min-width: 46px; }
-
-/* epic chips in row */
-.epic-chips { display: flex; gap: 5px; flex-wrap: wrap; }
-.epic-chip {
-  font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 4px; color: #fff;
-  white-space: nowrap;
+.bar-wrap { width: 100px; height: 7px; background: #E5E5E5; border-radius: 4px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 4px; transition: width .4s, background .4s; }
+.bar-pct  { font-size: 11.5px; font-weight: 800; min-width: 42px; text-align: right; }
+.status-badge {
+  font-size: 10.5px; font-weight: 700; padding: 2px 9px; border-radius: 10px;
+  white-space: nowrap; flex-shrink: 0;
 }
+.expand-btn {
+  background: none; border: 1px solid #DDD; border-radius: 5px;
+  padding: 3px 8px; font-size: 11px; cursor: pointer; color: #666;
+  flex-shrink: 0; transition: all .12s;
+}
+.expand-btn:hover { border-color: var(--blue); color: var(--blue); background: #EBF4FB; }
 
-/* add-row button */
+/* ── MEMBER DETAIL (expanded) ────────────────────────────────── */
+.member-detail { display: none; padding: 0 20px 16px 68px; }
+.member-detail.open { display: block; }
+
+.epic-block {
+  margin-bottom: 12px; border: 1px solid #E8E8E8;
+  border-radius: 8px; overflow: hidden;
+}
+.epic-block-head {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px; background: #FAFAFA;
+  border-bottom: 1px solid #EBEBEB;
+}
+.epic-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.epic-name { font-size: 12.5px; font-weight: 700; color: var(--navy); flex: 1; }
+.epic-wi-count { font-size: 10.5px; color: #888; font-weight: 600; }
+
+.wi-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.wi-table td { padding: 7px 12px; border-bottom: 1px solid #F3F3F3; vertical-align: top; }
+.wi-table tr:last-child td { border-bottom: none; }
+.wi-table tr:hover td { background: #FAFAFA; }
+.wi-num { font-size: 10.5px; font-weight: 700; color: var(--blue); white-space: nowrap; }
+.wi-subj { font-weight: 600; color: #181818; }
+.wi-notes { font-size: 11px; color: #888; font-style: italic; margin-top: 2px; line-height: 1.4; }
+.wi-status {
+  display: inline-block; font-size: 10px; font-weight: 700;
+  padding: 2px 8px; border-radius: 8px; white-space: nowrap;
+}
+.wi-status.new         { background: #EBF4FB; color: #014486; }
+.wi-status.inprogress  { background: #FEF4EA; color: #A86403; }
+.wi-status.waiting     { background: #F4F0FA; color: #6B37D0; }
+.wi-status.review      { background: #EEF5EA; color: #2E844A; }
+
+.no-epic-note { font-size: 11.5px; color: #AAA; padding: 10px 12px; font-style: italic; }
+
+/* ── ADD MEMBER ──────────────────────────────────────────────── */
 .add-row-btn {
-  display: flex; align-items: center; gap: 6px;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
   font-size: 12px; font-weight: 700; color: var(--blue);
   background: #EBF4FB; border: 1.5px dashed #90C4ED; border-radius: 7px;
-  padding: 8px 14px; cursor: pointer; margin-top: 12px; transition: all .15s; width: 100%;
-  justify-content: center;
+  padding: 8px 14px; cursor: pointer; margin: 12px 20px 16px; transition: all .15s;
 }
 .add-row-btn:hover { background: #D6EBFA; border-color: var(--blue); }
-
-/* ── EPIC ALLOCATION TABLE ───────────────────────────────────── */
-.alloc-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.alloc-table thead th {
-  font-size: 10px; font-weight: 800; color: #666;
-  text-transform: uppercase; letter-spacing: .6px;
-  padding: 8px 12px; border-bottom: 2px solid #EEE;
-  background: #FAFAFA; text-align: left; white-space: nowrap;
-}
-.alloc-table tbody td { padding: 9px 12px; border-bottom: 1px solid #F5F5F5; vertical-align: middle; }
-.alloc-table tbody tr:last-child td { border-bottom: none; }
-.alloc-table tbody tr:hover td { background: #FAFAFA; }
-.alloc-input {
-  width: 70px; border: 1.5px solid #DDD; border-radius: 6px;
-  padding: 5px 8px; font-size: 13px; font-family: inherit;
-  outline: none; text-align: center; font-weight: 700; color: var(--navy);
-  transition: border-color .15s;
-}
-.alloc-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(1,118,211,.12); }
 
 /* ── MODAL ───────────────────────────────────────────────────── */
 .overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.48); z-index:500; align-items:center; justify-content:center; }
@@ -179,6 +197,9 @@ body { font-family: 'Salesforce Sans', 'Segoe UI', system-ui, -apple-system, san
 .btn-cancel:hover { background:#E5E5E5; }
 .btn-delete { background:#FEDED3; color:#BA0517; margin-right:auto; }
 .btn-delete:hover { background:#FEBBB0; }
+.swatches { display:flex; gap:7px; flex-wrap:wrap; margin-top:4px; }
+.swatch { width:24px; height:24px; border-radius:50%; border:2.5px solid transparent; cursor:pointer; transition:.12s; }
+.swatch.active { border-color:#181818; transform:scale(1.18); }
 
 /* ── TOAST ───────────────────────────────────────────────────── */
 .toast { position:fixed; bottom:22px; right:22px; background:#032D60; color:#fff; padding:10px 18px; border-radius:8px; font-size:13px; font-weight:600; box-shadow:0 4px 18px rgba(3,45,96,.3); transform:translateY(60px); opacity:0; transition:all .28s; z-index:1000; }
@@ -186,26 +207,18 @@ body { font-family: 'Salesforce Sans', 'Segoe UI', system-ui, -apple-system, san
 
 /* ── STATUS BAR ──────────────────────────────────────────────── */
 .statusbar { background:#F4F6F8; border-top:1px solid #DDD; padding:5px 24px; font-size:11px; color:#999; display:flex; gap:18px; flex-wrap:wrap; }
-
-/* colour swatches */
-.swatches { display:flex; gap:7px; flex-wrap:wrap; margin-top:4px; }
-.swatch { width:24px; height:24px; border-radius:50%; border:2.5px solid transparent; cursor:pointer; transition:.12s; }
-.swatch.active { border-color:#181818; transform:scale(1.18); }
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <div class="header">
   <div class="header-logo">Capacity Planner<span> — AI Delivery Org</span></div>
   <div class="header-spacer"></div>
   <button class="hbtn primary" onclick="openAddMemberModal()">+ Member</button>
-  <button class="hbtn" onclick="openEpicModal()">+ Epic</button>
   <button class="hbtn" onclick="exportCSV()">↓ CSV</button>
   <div class="sync-pill"><span class="sync-dot"></span><span id="sync-text">Saved</span></div>
 </div>
 
-<!-- PAGE -->
 <div class="page">
 
   <!-- SUMMARY STRIP -->
@@ -218,81 +231,38 @@ body { font-family: 'Salesforce Sans', 'Segoe UI', system-ui, -apple-system, san
       <div class="sum-val" id="s-epics" style="color:var(--teal)">0</div>
       <div class="sum-lbl">Active Epics</div>
     </div>
+    <div class="sum-item s-wi">
+      <div class="sum-val" id="s-wi" style="color:#9050E9">0</div>
+      <div class="sum-lbl">Work Items</div>
+    </div>
+    <div class="sum-item s-inprog">
+      <div class="sum-val" id="s-inprog" style="color:#FE9339">0</div>
+      <div class="sum-lbl">In Progress</div>
+    </div>
     <div class="sum-item s-avg">
       <div class="sum-val c-amber" id="s-avg">—</div>
       <div class="sum-lbl">Avg Utilization</div>
     </div>
-    <div class="sum-item s-over">
-      <div class="sum-val c-red" id="s-over">0</div>
-      <div class="sum-lbl">Over-allocated (&gt;100%)</div>
-    </div>
-    <div class="sum-item s-under">
-      <div class="sum-val c-amber" id="s-under">0</div>
-      <div class="sum-lbl">Under-allocated (&lt;80%)</div>
-    </div>
   </div>
 
-  <!-- CAPACITY TABLE -->
+  <!-- TEAM CAPACITY -->
   <div class="section-card">
     <div class="section-head">
-      <h2>📊 Team Capacity — Utilization %</h2>
-      <span style="font-size:11px;opacity:.7">Click any Utilization % value to edit</span>
+      <h2>📊 Team Capacity — Utilization % &amp; GUS Work Items</h2>
+      <span style="font-size:11px;opacity:.65">Click a row to expand epics &amp; work items · Edit Utilization % inline</span>
     </div>
-    <div class="section-body" style="padding:0">
-      <table class="cap-table">
-        <thead>
-          <tr>
-            <th style="min-width:200px">Team Member</th>
-            <th class="c">Utilization %</th>
-            <th>Epics Assigned</th>
-            <th style="min-width:180px">Load</th>
-            <th style="width:80px">Status</th>
-            <th style="width:60px"></th>
-          </tr>
-        </thead>
-        <tbody id="cap-tbody"></tbody>
-      </table>
-      <div style="padding:12px 20px 16px">
-        <button class="add-row-btn" onclick="openAddMemberModal()">＋ Add Team Member</button>
-      </div>
-    </div>
+    <div id="members-list"></div>
+    <button class="add-row-btn" onclick="openAddMemberModal()">＋ Add Team Member</button>
   </div>
 
-  <!-- EPIC ALLOCATION TABLE -->
-  <div class="section-card">
-    <div class="section-head">
-      <h2>🎯 Epic Allocation</h2>
-      <button onclick="openEpicModal()" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:4px 12px;border-radius:5px;cursor:pointer;font-size:11px;font-weight:600">+ Add Epic</button>
-    </div>
-    <div class="section-body" style="padding:0">
-      <table class="alloc-table">
-        <thead>
-          <tr>
-            <th style="min-width:220px">Epic</th>
-            <th>Owner / DRI</th>
-            <th class="c">Target Utilization %</th>
-            <th>Status</th>
-            <th>Notes</th>
-            <th style="width:60px"></th>
-          </tr>
-        </thead>
-        <tbody id="epic-tbody"></tbody>
-      </table>
-      <div style="padding:12px 20px 16px">
-        <button class="add-row-btn" onclick="openEpicModal()">＋ Add Epic</button>
-      </div>
-    </div>
-  </div>
-
-</div><!-- /page -->
-
-<!-- STATUS BAR -->
-<div class="statusbar">
-  <span id="sb-info">Loading…</span>
-  <span>Capacity Planner — AI Delivery Org · Built with Claude AI</span>
 </div>
 
-<!-- ADD/EDIT MEMBER MODAL -->
+<div class="statusbar">
+  <span id="sb-info">Loading…</span>
+  <span>Capacity Planner — AI Delivery Org · GUS data pulled Jun 11 2026 · Built with Claude AI</span>
+</div>
+
+<!-- MEMBER MODAL -->
 <div class="overlay" id="member-overlay" onclick="if(event.target===this)closeMemberModal()">
   <div class="modal">
     <div class="modal-head">
@@ -325,101 +295,262 @@ body { font-family: 'Salesforce Sans', 'Segoe UI', system-ui, -apple-system, san
   </div>
 </div>
 
-<!-- ADD/EDIT EPIC MODAL -->
-<div class="overlay" id="epic-overlay" onclick="if(event.target===this)closeEpicModal()">
-  <div class="modal">
-    <div class="modal-head">
-      <h3 id="epic-modal-title">🎯 Add Epic</h3>
-      <button class="modal-x" onclick="closeEpicModal()">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="fg">
-        <label class="fl">Epic Name *</label>
-        <input class="fi" id="ep-name" type="text" placeholder="e.g. Own Our Narrative">
-      </div>
-      <div class="frow">
-        <div class="fg">
-          <label class="fl">Owner / DRI</label>
-          <input class="fi" id="ep-owner" type="text" placeholder="Name…">
-        </div>
-        <div class="fg">
-          <label class="fl">Target Utilization %</label>
-          <input class="fi" id="ep-util" type="text" placeholder="e.g. 50%">
-        </div>
-      </div>
-      <div class="fg">
-        <label class="fl">Status</label>
-        <input class="fi" id="ep-status" type="text" placeholder="e.g. In Progress, To Do, Done…">
-      </div>
-      <div class="fg">
-        <label class="fl">Notes</label>
-        <input class="fi" id="ep-notes" type="text" placeholder="Blockers, links, updates…">
-      </div>
-      <div class="fg">
-        <label class="fl">Colour</label>
-        <div class="swatches" id="ep-swatches"></div>
-      </div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn btn-delete" id="ep-delete-btn" onclick="deleteEpic()" style="display:none">Delete</button>
-      <button class="btn btn-cancel" onclick="closeEpicModal()">Cancel</button>
-      <button class="btn btn-save" onclick="saveEpic()">Save</button>
-    </div>
-  </div>
-</div>
-
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
 /* ── PALETTE ──────────────────────────────────────────────────── */
-const PALETTE = [
-  '#0176D3','#032D60','#06A59A','#2E844A',
-  '#9050E9','#EA001E','#FE9339','#A86403',
-  '#DB2777','#0891B2','#4F46E5','#15803D'
-];
+const PALETTE = ['#0176D3','#032D60','#06A59A','#2E844A','#9050E9','#EA001E','#FE9339','#A86403','#DB2777','#0891B2','#4F46E5','#15803D'];
+
+/* ── GUS DATA (pulled Jun 11 2026) ───────────────────────────── */
+const GUS_DATA = {
+  "Dipra Sanyal": {
+    epics: [
+      {
+        name: "EAC – Run the Business",
+        color: "#2E844A",
+        items: [
+          { w: "W-22579452", subj: "Coordination of Training Programs",          status: "In Progress", notes: "" },
+          { w: "W-22538870", subj: "Training Programs content update – APAC",    status: "In Progress", notes: "" },
+          { w: "W-22538844", subj: "FY27 Training Calendar update",              status: "New",         notes: "" },
+        ]
+      },
+      {
+        name: "Own Our Narrative",
+        color: "#9050E9",
+        items: [
+          { w: "W-22466716", subj: "Orchestration idea plan – ideas 10 & 12 with marketing", status: "In Progress", notes: "" },
+          { w: "W-22456474", subj: "Shortlist top 2 ideas and work on implementation plan",   status: "In Progress", notes: "" },
+        ]
+      },
+      {
+        name: "TPIL Partnership",
+        color: "#0891B2",
+        items: [
+          { w: "W-22541744", subj: "Informatica Onboarding",                     status: "In Progress", notes: "" },
+        ]
+      },
+      {
+        name: "VTO (Volunteer Time Off)",
+        color: "#EA001E",
+        items: [
+          { w: "W-22538912", subj: "VTO",                                        status: "In Progress", notes: "" },
+        ]
+      },
+      {
+        name: "(No Epic)",
+        color: "#AAA",
+        items: [
+          { w: "W-22771250", subj: "Weekly Show & Share session for Demos and Outcomes", status: "New", notes: "" },
+        ]
+      }
+    ]
+  },
+  "Pavan Kumar Bayana": {
+    epics: [
+      {
+        name: "PDLC Metric Transformation",
+        color: "#0176D3",
+        items: [
+          { w: "W-22579465", subj: "Assessment of PDLC related metrics currently available in GUS", status: "In Progress", notes: "" },
+        ]
+      }
+    ]
+  },
+  "Pranav Gupta": {
+    epics: [
+      {
+        name: "Scaling Agentic PM Studio (GEM Pipeline)",
+        color: "#06A59A",
+        items: [
+          { w: "W-22580152", subj: "Onboarding PMs to GEMs",         status: "In Progress", notes: "" },
+          { w: "W-22766505", subj: "Capturing GEM Metrics",           status: "Waiting",     notes: "" },
+          { w: "W-22560619", subj: "Feedback & Impact Measure",       status: "New",         notes: "" },
+          { w: "W-22560593", subj: "Feedback & Impact Measure",       status: "New",         notes: "" },
+        ]
+      },
+      {
+        name: "(No Epic)",
+        color: "#AAA",
+        items: [
+          { w: "W-22893756", subj: "AI PM Hub",                       status: "In Progress", notes: "" },
+        ]
+      }
+    ]
+  },
+  "Rajan Julka": {
+    epics: [
+      {
+        name: "3x Productivity",
+        color: "#FE9339",
+        items: [
+          { w: "W-22541378", subj: "Self-Check Assessment Implementation",    status: "New", notes: "" },
+          { w: "W-22541376", subj: "Centralized AI Knowledge Repository",     status: "New", notes: "" },
+          { w: "W-22541383", subj: "AI Conference Identification",            status: "New", notes: "" },
+          { w: "W-22541385", subj: "Training Program for Proficient Level",   status: "New", notes: "" },
+          { w: "W-22541382", subj: "AI Literacy Definition Document",         status: "New", notes: "" },
+        ]
+      },
+      {
+        name: "SDLC Experimentation",
+        color: "#4F46E5",
+        items: [
+          { w: "W-22579552", subj: "CCE Team Experiment Scaling",             status: "In Progress", notes: "" },
+          { w: "W-22893665", subj: "Work on blueprint action items",          status: "In Progress", notes: "" },
+          { w: "W-22541617", subj: "Documentation of Experiment Findings",   status: "New",         notes: "" },
+          { w: "W-22541618", subj: "Training on AI Tool Utilization",         status: "New",         notes: "" },
+          { w: "W-22541614", subj: "Validation of Performance Metrics",       status: "New",         notes: "" },
+          { w: "W-22541613", subj: "AI-Driven Efficiency Experiments",        status: "New",         notes: "" },
+          { w: "W-22541615", subj: "User Feedback on AI Tools",               status: "New",         notes: "" },
+          { w: "W-22541781", subj: "Analytics: High Priority Cloud Engagement",status:"New",         notes: "" },
+        ]
+      },
+      {
+        name: "Scaling Experiments",
+        color: "#DB2777",
+        items: [
+          { w: "W-22541544", subj: "Launch Product Management Experiments",   status: "New", notes: "" },
+          { w: "W-22541542", subj: "Identify AI Use Cases for Product Mgmt",  status: "New", notes: "" },
+          { w: "W-22541546", subj: "Identify AI Use Cases for Software Dev",  status: "New", notes: "" },
+          { w: "W-22541549", subj: "Institutionalize Successful Patterns",    status: "New", notes: "" },
+          { w: "W-22541547", subj: "Launch Software Development Experiments", status: "New", notes: "" },
+        ]
+      },
+      {
+        name: "PDLC Experimentation",
+        color: "#0891B2",
+        items: [
+          { w: "W-22541581", subj: "Analyze AI-Driven Efficiency Metrics",           status: "New", notes: "" },
+          { w: "W-22541674", subj: "Launch AI Heroes Program",                       status: "New", notes: "" },
+          { w: "W-22541575", subj: "Measure Efficiency in Product Development",      status: "New", notes: "" },
+          { w: "W-22541583", subj: "Gather Stakeholder Feedback on Experiments",     status: "New", notes: "" },
+        ]
+      },
+      {
+        name: "EAC – Run the Business",
+        color: "#2E844A",
+        items: [
+          { w: "W-22541231", subj: "Update Training Content for SL Program",         status: "New", notes: "" },
+          { w: "W-22541255", subj: "Improve New Hire Training Experience",            status: "New", notes: "" },
+          { w: "W-22541233", subj: "Enhance PM Foundations Training",                status: "New", notes: "" },
+        ]
+      },
+      {
+        name: "Build a High Performance Culture (M1.2)",
+        color: "#A86403",
+        items: [
+          { w: "W-22541520", subj: "GIS Survey Action Plans",                        status: "New", notes: "" },
+          { w: "W-22541519", subj: "Quarterly Performance Check-Ins",                status: "New", notes: "" },
+          { w: "W-22541484", subj: "Regular Team Engagement Events",                 status: "New", notes: "" },
+        ]
+      },
+      {
+        name: "New Hire Experience – AMER/APAC",
+        color: "#15803D",
+        items: [
+          { w: "W-22541859", subj: "Prioritize High-Value Content for New Hires",    status: "New", notes: "" },
+          { w: "W-22541858", subj: "Revise Self-Service Content for New Hires",      status: "New", notes: "" },
+        ]
+      },
+      {
+        name: "TPIL Partnership",
+        color: "#0891B2",
+        items: [
+          { w: "W-22541740", subj: "AI Camps for EM/PM/SWE",                         status: "New", notes: "" },
+          { w: "W-22541739", subj: "T&P Tour Strategy for EM and PM",                status: "New", notes: "" },
+        ]
+      },
+      {
+        name: "PM Coaching – EAC APAC Strategic Initiative",
+        color: "#EA001E",
+        items: [
+          { w: "W-22893673", subj: "PM Foundations – Review & Refresh",              status: "New", notes: "" },
+        ]
+      },
+      {
+        name: "Technical Excellence in APAC",
+        color: "#032D60",
+        items: [
+          { w: "W-22541638", subj: "Tailored Guidance for Development Needs",        status: "New", notes: "" },
+        ]
+      },
+      {
+        name: "VTO – Culture of Giving Back",
+        color: "#EA001E",
+        items: [
+          { w: "W-22541325", subj: "Promoting Volunteer Opportunities",              status: "New", notes: "" },
+          { w: "W-22541317", subj: "Viewing Available Community Service Projects",   status: "New", notes: "" },
+        ]
+      },
+      {
+        name: "(No Epic)",
+        color: "#AAA",
+        items: [
+          { w: "W-22771263", subj: "Explore participation in early AI releases",     status: "New", notes: "" },
+          { w: "W-22771259", subj: "Regularly revisit and reprioritize V2MOM",       status: "New", notes: "" },
+          { w: "W-22893675", subj: "AI Camps for EMs 6/30",                          status: "In Progress", notes: "" },
+        ]
+      }
+    ]
+  },
+  "VJ Swaminathan": {
+    epics: [
+      {
+        name: "SDLC Experimentation",
+        color: "#4F46E5",
+        items: [
+          { w: "W-22579401", subj: "Sherlock – Data Cloud Investigations Experiment", status: "In Progress", notes: "" },
+          { w: "W-22579413", subj: "Release Capacity Planner for Data Cloud",          status: "In Progress", notes: "" },
+          { w: "W-22579436", subj: "Modern Scrum Board – GUS MIYO",                    status: "In Progress", notes: "" },
+          { w: "W-22579424", subj: "Engineering Health Command Center",                status: "In Progress", notes: "" },
+        ]
+      },
+      {
+        name: "(No Epic)",
+        color: "#AAA",
+        items: [
+          { w: "W-22765906", subj: "Enterprise AIDLC – Problem Statement",            status: "In Progress", notes: "" },
+          { w: "W-22765888", subj: "Service Catalog",                                  status: "In Progress", notes: "" },
+        ]
+      }
+    ]
+  }
+};
 
 /* ── STATE ────────────────────────────────────────────────────── */
-const LS_KEY = 'capPlanner_aiDelivery_v1';
-let S = { members: {}, epics: {} };
+const LS_KEY = 'capPlanner_aiDelivery_v2';
+let S = { members: {} };
 
-/* ── SEED DATA ────────────────────────────────────────────────── */
+/* ── SEED MEMBERS ─────────────────────────────────────────────── */
 const SEED_MEMBERS = [
-  { id:'m1', name:'Lopamudra Misra',    role:'Director, AI Delivery',      util:100, color:'#0176D3' },
-  { id:'m2', name:'Rajan Julka',        role:'AI Delivery Lead Senior',    util:80,  color:'#EA001E' },
-  { id:'m3', name:'Pavan Kumar Bayana', role:'AI Delivery Lead',           util:80,  color:'#06A59A' },
-  { id:'m4', name:'Pranav Gupta',       role:'AI Delivery Lead',           util:80,  color:'#FE9339' },
-  { id:'m5', name:'VJ Swaminathan',     role:'AI Delivery Lead Senior',    util:80,  color:'#9050E9' },
-  { id:'m6', name:'Dipra Sanyal',       role:'Program Manager',            util:80,  color:'#032D60' },
-  { id:'m7', name:'Hector Reyes',       role:'AI Delivery Lead Senior',    util:80,  color:'#2E844A' },
-  { id:'m8', name:'Sohini Arya',        role:'AI Delivery Lead',           util:80,  color:'#DB2777' },
-  { id:'m9', name:'Arun Kumar P.',      role:'AI Delivery Lead',           util:80,  color:'#0891B2' },
-  { id:'m10',name:'Manjari Kumar',      role:'AI Delivery Lead',           util:80,  color:'#4F46E5' },
-  { id:'m11',name:'Kalyan Vandana',     role:'AI Delivery Lead Senior',    util:80,  color:'#A86403' },
-  { id:'m12',name:'Paul Rajiv',         role:'AI Delivery Lead',           util:80,  color:'#15803D' },
+  { id:'m1',  name:'Lopamudra Misra',    role:'Director, AI Delivery',      util:100, color:'#0176D3' },
+  { id:'m2',  name:'Rajan Julka',        role:'AI Delivery Lead Senior',    util:80,  color:'#EA001E' },
+  { id:'m3',  name:'Pavan Kumar Bayana', role:'AI Delivery Lead',           util:80,  color:'#06A59A' },
+  { id:'m4',  name:'Pranav Gupta',       role:'AI Delivery Lead',           util:80,  color:'#FE9339' },
+  { id:'m5',  name:'VJ Swaminathan',     role:'AI Delivery Lead Senior',    util:80,  color:'#9050E9' },
+  { id:'m6',  name:'Dipra Sanyal',       role:'Program Manager',            util:80,  color:'#032D60' },
+  { id:'m7',  name:'Hector Reyes',       role:'AI Delivery Lead Senior',    util:80,  color:'#2E844A' },
+  { id:'m8',  name:'Sohini Arya',        role:'AI Delivery Lead',           util:80,  color:'#DB2777' },
+  { id:'m9',  name:'Arun Kumar P.',      role:'AI Delivery Lead',           util:80,  color:'#0891B2' },
+  { id:'m10', name:'Manjari Kumar',      role:'AI Delivery Lead',           util:80,  color:'#4F46E5' },
+  { id:'m11', name:'Kalyan Vandana',     role:'AI Delivery Lead Senior',    util:80,  color:'#A86403' },
+  { id:'m12', name:'Paul Rajiv',         role:'AI Delivery Lead',           util:80,  color:'#15803D' },
 ];
-const SEED_EPICS = [
-  { id:'e1',  name:'GEM Pipeline',                           owner:'Pavan',  util:'80%', status:'In Progress', notes:'',  color:'#0176D3' },
-  { id:'e2',  name:'Own Our Narrative',                      owner:'Rajan',  util:'50%', status:'In Progress', notes:'',  color:'#9050E9' },
-  { id:'e3',  name:'AI PM & Product Enablement',             owner:'Pranav', util:'60%', status:'In Progress', notes:'',  color:'#06A59A' },
-  { id:'e4',  name:'AI Tooling & Product-Engineering',       owner:'Pavan',  util:'60%', status:'In Progress', notes:'',  color:'#EA001E' },
-  { id:'e5',  name:'Delivery Leadership & Governance',       owner:'Lopa',   util:'40%', status:'In Progress', notes:'',  color:'#032D60' },
-  { id:'e6',  name:'EAC Programs',                           owner:'Dipra',  util:'50%', status:'In Progress', notes:'',  color:'#2E844A' },
-  { id:'e7',  name:'EM & TPIL Offerings',                    owner:'Rajan',  util:'60%', status:'In Progress', notes:'',  color:'#A86403' },
-  { id:'e8',  name:'Scaling Experiments',                    owner:'VJ',     util:'50%', status:'To Do',       notes:'',  color:'#4F46E5' },
-  { id:'e9',  name:'Data Cloud – SDLC Agentic Orchestrator', owner:'VJ',     util:'60%', status:'In Progress', notes:'',  color:'#DB2777' },
-  { id:'e10', name:'Flow Workshop',                          owner:'Rajan',  util:'40%', status:'In Progress', notes:'',  color:'#0891B2' },
-];
+
+/* ── GUS NAME MATCH ───────────────────────────────────────────── */
+function gusKey(name) {
+  if (name.toLowerCase().includes('vijayveerappan') || name.toLowerCase().startsWith('vj')) return 'VJ Swaminathan';
+  if (name.toLowerCase().includes('dipra'))  return 'Dipra Sanyal';
+  if (name.toLowerCase().includes('rajan'))  return 'Rajan Julka';
+  if (name.toLowerCase().includes('pranav')) return 'Pranav Gupta';
+  if (name.toLowerCase().includes('pavan'))  return 'Pavan Kumar Bayana';
+  return null;
+}
 
 /* ── PERSISTENCE ──────────────────────────────────────────────── */
 function loadState() {
   const raw = localStorage.getItem(LS_KEY);
-  if (raw) {
-    try { const p = JSON.parse(raw); S.members = p.members||{}; S.epics = p.epics||{}; return; }
-    catch(e) {}
-  }
+  if (raw) { try { const p = JSON.parse(raw); S.members = p.members||{}; return; } catch(e){} }
   SEED_MEMBERS.forEach(m => { S.members[m.id] = {...m}; });
-  SEED_EPICS.forEach(e => { S.epics[e.id] = {...e}; });
   saveState();
 }
 function saveState() {
@@ -430,143 +561,163 @@ function saveState() {
 }
 
 /* ── UTILS ────────────────────────────────────────────────────── */
-function initials(name) { return name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(); }
-function escHtml(s) {
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function initials(n) { return n.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(); }
+function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function statusClass(s) {
+  if (!s) return 'new';
+  const l = s.toLowerCase();
+  if (l.includes('progress')) return 'inprogress';
+  if (l.includes('wait'))     return 'waiting';
+  if (l.includes('review'))   return 'review';
+  return 'new';
 }
 
 /* ── RENDER ───────────────────────────────────────────────────── */
 function render() {
   renderSummary();
-  renderCapTable();
-  renderEpicTable();
+  renderMemberList();
   renderStatusBar();
 }
 
 function renderSummary() {
   const members = Object.values(S.members);
-  const epics   = Object.values(S.epics);
-  const utils   = members.map(m => m.util || 0);
-  const avg     = utils.length ? Math.round(utils.reduce((a,b)=>a+b,0)/utils.length) : 0;
-  const over    = utils.filter(u => u > 100).length;
-  const under   = utils.filter(u => u > 0 && u < 80).length;
+  let totalEpics = 0, totalWI = 0, totalInProg = 0;
+  members.forEach(m => {
+    const gd = GUS_DATA[gusKey(m.name)] || GUS_DATA[m.name];
+    if (gd) {
+      totalEpics += gd.epics.filter(e=>e.name!=='(No Epic)').length;
+      gd.epics.forEach(e => {
+        totalWI += e.items.length;
+        totalInProg += e.items.filter(i=>i.status==='In Progress').length;
+      });
+    }
+  });
+  const utils = members.map(m=>m.util||0);
+  const avg = utils.length ? Math.round(utils.reduce((a,b)=>a+b,0)/utils.length) : 0;
   document.getElementById('s-members').textContent = members.length;
-  document.getElementById('s-epics').textContent   = epics.length;
+  document.getElementById('s-epics').textContent   = totalEpics;
+  document.getElementById('s-wi').textContent      = totalWI;
+  document.getElementById('s-inprog').textContent  = totalInProg;
   document.getElementById('s-avg').textContent     = avg ? avg+'%' : '—';
-  document.getElementById('s-over').textContent    = over;
-  document.getElementById('s-under').textContent   = under;
   const avgEl = document.getElementById('s-avg');
-  avgEl.className = 'sum-val ' + (avg>100?'c-red':avg>=80?'c-green':'c-amber');
+  avgEl.className = 'sum-val '+(avg>100?'c-red':avg>=80?'c-green':'c-amber');
 }
 
-function renderCapTable() {
-  const tbody = document.getElementById('cap-tbody');
+function renderMemberList() {
+  const container = document.getElementById('members-list');
   const members = Object.values(S.members);
   if (!members.length) {
-    tbody.innerHTML = `<tr><td colspan="6" style="padding:28px;text-align:center;color:#AAA;font-style:italic">No team members yet — click + Member to add.</td></tr>`;
+    container.innerHTML = `<div style="padding:30px;text-align:center;color:#AAA;font-style:italic">No team members yet.</div>`;
     return;
   }
-  tbody.innerHTML = members.map(m => {
-    const util = m.util || 0;
-    const barW = Math.min(util, 100);
-    const barC = util > 100 ? '#BA0517' : util >= 80 ? '#2E844A' : '#FE9339';
-    const pctC = util > 100 ? '#BA0517' : util >= 80 ? '#2E844A' : '#A86403';
-    const statusLabel = util > 100 ? '🔴 Over'  : util >= 80 ? '🟢 On Track' : util > 0 ? '🟡 Under' : '⚪ Not Set';
-    // epics assigned to this member (owner match)
-    const memberEpics = Object.values(S.epics).filter(e => (e.owner||'').toLowerCase().includes(m.name.split(' ')[0].toLowerCase()));
-    const epicChips = memberEpics.map(e => `<span class="epic-chip" style="background:${e.color}">${escHtml(e.name.split(/[\s–—]/)[0])}</span>`).join('');
-    return `<tr>
-      <td>
-        <div class="member-cell">
-          <div class="member-avatar" style="background:${m.color}">${initials(m.name)}</div>
-          <div>
-            <div class="member-name">${escHtml(m.name)}</div>
-            ${m.role ? `<div class="member-role">${escHtml(m.role)}</div>` : ''}
-          </div>
+  container.innerHTML = members.map(m => {
+    const util  = m.util || 0;
+    const barW  = Math.min(util, 100);
+    const barC  = util>100?'#BA0517':util>=80?'#2E844A':'#FE9339';
+    const pctC  = util>100?'#BA0517':util>=80?'#2E844A':'#A86403';
+    const badge = util>100
+      ? `<span class="status-badge" style="background:#FEDED3;color:#BA0517">🔴 Over</span>`
+      : util>=80
+      ? `<span class="status-badge" style="background:#EEF5EA;color:#2E844A">🟢 On Track</span>`
+      : util>0
+      ? `<span class="status-badge" style="background:#FEF4EA;color:#A86403">🟡 Under</span>`
+      : `<span class="status-badge" style="background:#F3F2F2;color:#888">⚪ Not Set</span>`;
+
+    const gd = GUS_DATA[gusKey(m.name)] || GUS_DATA[m.name];
+    const wiCount = gd ? gd.epics.reduce((s,e)=>s+e.items.length,0) : 0;
+    const epCount = gd ? gd.epics.filter(e=>e.name!=='(No Epic)').length : 0;
+    const wiInfo  = gd ? `<span style="font-size:10.5px;color:#888;margin-left:4px">${epCount} epic${epCount!==1?'s':''} · ${wiCount} work item${wiCount!==1?'s':''}</span>` : '';
+
+    const detail = gd ? buildMemberDetail(m, gd) : `<div class="no-epic-note">No GUS work items found for this member.</div>`;
+
+    return `<div class="member-row" id="row-${m.id}">
+      <div class="member-summary" onclick="toggleExpand('${m.id}')">
+        <div class="member-avatar" style="background:${m.color}">${initials(m.name)}</div>
+        <div class="member-info">
+          <div class="member-name">${escHtml(m.name)} ${wiInfo}</div>
+          ${m.role?`<div class="member-role">${escHtml(m.role)}</div>`:''}
         </div>
-      </td>
-      <td style="text-align:center">
-        <input class="util-input" type="number" min="0" max="200" value="${util}"
-          onchange="updateMemberUtil('${m.id}', this.value)"
-          title="Edit utilization for ${escHtml(m.name)}"> %
-      </td>
-      <td><div class="epic-chips">${epicChips || '<span style="color:#BBB;font-size:11px">—</span>'}</div></td>
-      <td>
-        <div class="bar-cell">
+        <div class="member-util-wrap">
+          <input class="util-input" type="number" min="0" max="200" value="${util}"
+            onclick="event.stopPropagation()"
+            onchange="updateUtil('${m.id}',this.value)"> %
           <div class="bar-wrap"><div class="bar-fill" style="width:${barW}%;background:${barC}"></div></div>
-          <span class="bar-pct" style="color:${pctC}">${util}%${util>100?' ⚠':''}${util===0?' —':''}</span>
+          <span class="bar-pct" style="color:${pctC}">${util}%</span>
+          ${badge}
         </div>
-      </td>
-      <td style="font-size:11px;font-weight:700">${statusLabel}</td>
-      <td style="text-align:right">
-        <button onclick="openEditMemberModal('${m.id}')" style="background:#EBF4FB;border:1px solid #90C4ED;color:var(--blue);border-radius:5px;padding:3px 9px;cursor:pointer;font-size:11px;font-weight:700">Edit</button>
-      </td>
-    </tr>`;
-  }).join('');
-
-  // Total row
-  const total = members.reduce((s,m) => s+(m.util||0), 0);
-  const avgTot = members.length ? Math.round(total/members.length) : 0;
-  const tBarC = avgTot>100?'#BA0517':avgTot>=80?'#2E844A':'#FE9339';
-  tbody.innerHTML += `<tr class="total-row">
-    <td>🏆 TEAM AVERAGE</td>
-    <td style="text-align:center;font-weight:800">${avgTot}%</td>
-    <td></td>
-    <td><div class="bar-cell">
-      <div class="bar-wrap"><div class="bar-fill" style="width:${Math.min(avgTot,100)}%;background:${tBarC}"></div></div>
-      <span class="bar-pct" style="color:${tBarC};font-size:13px">${avgTot}%</span>
-    </div></td>
-    <td colspan="2"></td>
-  </tr>`;
-}
-
-function renderEpicTable() {
-  const tbody = document.getElementById('epic-tbody');
-  const epics = Object.values(S.epics);
-  if (!epics.length) {
-    tbody.innerHTML = `<tr><td colspan="6" style="padding:28px;text-align:center;color:#AAA;font-style:italic">No epics yet — click + Epic to add.</td></tr>`;
-    return;
-  }
-  tbody.innerHTML = epics.map(e => `<tr>
-    <td>
-      <div style="display:flex;align-items:center;gap:8px">
-        <div style="width:10px;height:10px;border-radius:50%;background:${e.color};flex-shrink:0"></div>
-        <span style="font-weight:700">${escHtml(e.name)}</span>
+        <button class="expand-btn" onclick="event.stopPropagation();toggleExpand('${m.id}')" id="expbtn-${m.id}">▼ Epics</button>
+        <button onclick="event.stopPropagation();openEditMemberModal('${m.id}')" style="background:#EBF4FB;border:1px solid #90C4ED;color:var(--blue);border-radius:5px;padding:3px 9px;cursor:pointer;font-size:11px;font-weight:700;margin-left:4px">Edit</button>
       </div>
-    </td>
-    <td>${e.owner ? `<span style="font-weight:600;color:var(--navy)">${escHtml(e.owner)}</span>` : '<span style="color:#BBB">—</span>'}</td>
-    <td style="text-align:center">
-      <input class="alloc-input" type="text" value="${escHtml(e.util||'')}"
-        onchange="updateEpicUtil('${e.id}', this.value)"
-        placeholder="e.g. 50%">
-    </td>
-    <td><span style="font-size:11px;font-weight:700;color:${e.status==='Done'?'#2E844A':e.status==='Blocked'?'#BA0517':'#A86403'}">${escHtml(e.status||'—')}</span></td>
-    <td style="font-size:12px;color:#888;font-style:italic">${escHtml(e.notes||'')}</td>
-    <td style="text-align:right">
-      <button onclick="openEditEpicModal('${e.id}')" style="background:#EBF4FB;border:1px solid #90C4ED;color:var(--blue);border-radius:5px;padding:3px 9px;cursor:pointer;font-size:11px;font-weight:700">Edit</button>
-    </td>
-  </tr>`).join('');
+      <div class="member-detail" id="detail-${m.id}">
+        ${detail}
+      </div>
+    </div>`;
+  }).join('');
 }
 
-function renderStatusBar() {
-  const members = Object.values(S.members);
-  const epics   = Object.values(S.epics);
-  document.getElementById('sb-info').textContent =
-    `${members.length} members · ${epics.length} epics · Last saved: ${new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}`;
+function buildMemberDetail(m, gd) {
+  return gd.epics.map(ep => {
+    const wiRows = ep.items.map(wi => `<tr>
+      <td style="width:110px">
+        <span class="wi-num">${wi.w}</span>
+        <br><span class="wi-status ${statusClass(wi.status)}">${wi.status}</span>
+      </td>
+      <td>
+        <div class="wi-subj">${escHtml(wi.subj)}</div>
+        ${wi.notes?`<div class="wi-notes">${escHtml(wi.notes)}</div>`:''}
+      </td>
+      <td style="width:220px">
+        <input type="text" value="${escHtml(wi.notes)}"
+          placeholder="Add notes…"
+          style="width:100%;border:1px solid #DDD;border-radius:5px;padding:4px 7px;font-size:11px;font-family:inherit;outline:none;"
+          onfocus="this.style.borderColor='#0176D3'"
+          onblur="this.style.borderColor='#DDD';updateWiNotes('${m.id}','${wi.w}',this.value)">
+      </td>
+    </tr>`).join('');
+
+    return `<div class="epic-block">
+      <div class="epic-block-head">
+        <div class="epic-dot" style="background:${ep.color}"></div>
+        <span class="epic-name">${escHtml(ep.name)}</span>
+        <span class="epic-wi-count">${ep.items.length} item${ep.items.length!==1?'s':''}</span>
+      </div>
+      <table class="wi-table">
+        <thead style="background:#FAFAFA">
+          <tr>
+            <td style="padding:5px 12px;font-size:10px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:.5px;width:110px">W-Number / Status</td>
+            <td style="padding:5px 12px;font-size:10px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:.5px">Work Item</td>
+            <td style="padding:5px 12px;font-size:10px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:.5px;width:220px">Notes</td>
+          </tr>
+        </thead>
+        <tbody>${wiRows}</tbody>
+      </table>
+    </div>`;
+  }).join('');
+}
+
+/* ── EXPAND / COLLAPSE ────────────────────────────────────────── */
+function toggleExpand(id) {
+  const detail = document.getElementById('detail-'+id);
+  const btn    = document.getElementById('expbtn-'+id);
+  const isOpen = detail.classList.contains('open');
+  detail.classList.toggle('open', !isOpen);
+  btn.textContent = isOpen ? '▼ Epics' : '▲ Epics';
 }
 
 /* ── INLINE UPDATES ───────────────────────────────────────────── */
-function updateMemberUtil(id, val) {
-  const v = parseInt(val);
-  if (isNaN(v) || v < 0) return;
+function updateUtil(id, val) {
+  const v = parseInt(val); if(isNaN(v)||v<0) return;
   S.members[id].util = v;
   saveState(); render();
   toast(`Updated: ${S.members[id].name} → ${v}%`);
 }
-function updateEpicUtil(id, val) {
-  S.epics[id].util = val.trim();
-  saveState();
-  toast(`Epic updated`);
+function updateWiNotes(memberId, wnum, val) {
+  const key = gusKey(S.members[memberId]?.name) || S.members[memberId]?.name;
+  if (!GUS_DATA[key]) return;
+  GUS_DATA[key].epics.forEach(ep => {
+    const wi = ep.items.find(i=>i.w===wnum);
+    if (wi) wi.notes = val;
+  });
 }
 
 /* ── MEMBER MODAL ─────────────────────────────────────────────── */
@@ -580,9 +731,9 @@ function openAddMemberModal() {
   document.getElementById('mb-role').value = '';
   document.getElementById('mb-util').value = '80';
   document.getElementById('mb-delete-btn').style.display = 'none';
-  renderSwatches('mb-swatches', _mbColor, c => { _mbColor=c; renderSwatches('mb-swatches',_mbColor,arguments.callee); });
+  renderSwatches();
   document.getElementById('member-overlay').classList.add('open');
-  document.getElementById('mb-name').focus();
+  setTimeout(()=>document.getElementById('mb-name').focus(), 100);
 }
 function openEditMemberModal(id) {
   _editMemberId = id;
@@ -593,7 +744,7 @@ function openEditMemberModal(id) {
   document.getElementById('mb-role').value = m.role||'';
   document.getElementById('mb-util').value = m.util||'';
   document.getElementById('mb-delete-btn').style.display = '';
-  renderSwatches('mb-swatches', _mbColor, c => { _mbColor=c; renderSwatches('mb-swatches',_mbColor,arguments.callee); });
+  renderSwatches();
   document.getElementById('member-overlay').classList.add('open');
 }
 function closeMemberModal() { document.getElementById('member-overlay').classList.remove('open'); }
@@ -601,15 +752,11 @@ function saveMember() {
   const name = document.getElementById('mb-name').value.trim();
   if (!name) { document.getElementById('mb-name').style.borderColor='#BA0517'; return; }
   if (_editMemberId) {
-    Object.assign(S.members[_editMemberId], {
-      name, role: document.getElementById('mb-role').value.trim(),
-      util: parseInt(document.getElementById('mb-util').value)||0,
-      color: _mbColor
-    });
+    Object.assign(S.members[_editMemberId], { name, role: document.getElementById('mb-role').value.trim(), util: parseInt(document.getElementById('mb-util').value)||0, color: _mbColor });
     toast('Member updated');
   } else {
-    const id = 'm'+Date.now();
-    S.members[id] = { id, name, role: document.getElementById('mb-role').value.trim(), util: parseInt(document.getElementById('mb-util').value)||0, color: _mbColor };
+    const id='m'+Date.now();
+    S.members[id]={id, name, role: document.getElementById('mb-role').value.trim(), util: parseInt(document.getElementById('mb-util').value)||0, color: _mbColor};
     toast('Member added: '+name);
   }
   saveState(); render(); closeMemberModal();
@@ -618,78 +765,30 @@ function deleteMember() {
   if (!_editMemberId) return;
   if (!confirm(`Remove ${S.members[_editMemberId]?.name}?`)) return;
   delete S.members[_editMemberId];
-  saveState(); render(); closeMemberModal();
-  toast('Member removed');
+  saveState(); render(); closeMemberModal(); toast('Member removed');
 }
-
-/* ── EPIC MODAL ───────────────────────────────────────────────── */
-let _editEpicId = null;
-let _epColor = PALETTE[0];
-
-function openEpicModal() {
-  _editEpicId = null; _epColor = PALETTE[0];
-  document.getElementById('epic-modal-title').textContent = '🎯 Add Epic';
-  ['ep-name','ep-owner','ep-util','ep-status','ep-notes'].forEach(id => document.getElementById(id).value='');
-  document.getElementById('ep-delete-btn').style.display = 'none';
-  renderSwatches('ep-swatches', _epColor, c => { _epColor=c; renderSwatches('ep-swatches',_epColor,arguments.callee); });
-  document.getElementById('epic-overlay').classList.add('open');
-  document.getElementById('ep-name').focus();
-}
-function openEditEpicModal(id) {
-  _editEpicId = id;
-  const e = S.epics[id]; if(!e) return;
-  _epColor = e.color || PALETTE[0];
-  document.getElementById('epic-modal-title').textContent = '✎ Edit Epic';
-  document.getElementById('ep-name').value   = e.name;
-  document.getElementById('ep-owner').value  = e.owner||'';
-  document.getElementById('ep-util').value   = e.util||'';
-  document.getElementById('ep-status').value = e.status||'';
-  document.getElementById('ep-notes').value  = e.notes||'';
-  document.getElementById('ep-delete-btn').style.display = '';
-  renderSwatches('ep-swatches', _epColor, c => { _epColor=c; renderSwatches('ep-swatches',_epColor,arguments.callee); });
-  document.getElementById('epic-overlay').classList.add('open');
-}
-function closeEpicModal() { document.getElementById('epic-overlay').classList.remove('open'); }
-function saveEpic() {
-  const name = document.getElementById('ep-name').value.trim();
-  if (!name) { document.getElementById('ep-name').style.borderColor='#BA0517'; return; }
-  const data = {
-    name, owner: document.getElementById('ep-owner').value.trim(),
-    util: document.getElementById('ep-util').value.trim(),
-    status: document.getElementById('ep-status').value.trim(),
-    notes: document.getElementById('ep-notes').value.trim(),
-    color: _epColor
-  };
-  if (_editEpicId) { Object.assign(S.epics[_editEpicId], data); toast('Epic updated'); }
-  else { const id='e'+Date.now(); S.epics[id]={id,...data}; toast('Epic added: '+name); }
-  saveState(); render(); closeEpicModal();
-}
-function deleteEpic() {
-  if (!_editEpicId) return;
-  if (!confirm(`Delete epic "${S.epics[_editEpicId]?.name}"?`)) return;
-  delete S.epics[_editEpicId];
-  saveState(); render(); closeEpicModal();
-  toast('Epic deleted');
-}
-
-/* ── SWATCHES ─────────────────────────────────────────────────── */
-function renderSwatches(containerId, chosen, onPick) {
-  const el = document.getElementById(containerId);
-  el.innerHTML = PALETTE.map(c =>
-    `<div class="swatch${c===chosen?' active':''}" style="background:${c}" onclick="(${onPick.toString()})('${c}')"></div>`
+function renderSwatches() {
+  document.getElementById('mb-swatches').innerHTML = PALETTE.map(c =>
+    `<div class="swatch${c===_mbColor?' active':''}" style="background:${c}" onclick="_mbColor='${c}';renderSwatches()"></div>`
   ).join('');
 }
 
 /* ── EXPORT CSV ───────────────────────────────────────────────── */
 function exportCSV() {
-  const members = Object.values(S.members);
-  const epics   = Object.values(S.epics);
-  const mRows = members.map(m => [m.name, m.role||'', (m.util||0)+'%', m.util>100?'Over':m.util>=80?'On Track':'Under']);
-  const eRows = epics.map(e => [e.name, e.owner||'', e.util||'', e.status||'', e.notes||'']);
-  let csv = 'TEAM CAPACITY\r\nName,Role,Utilization %,Status\r\n';
-  csv += mRows.map(r=>r.map(c=>`"${(c+'').replace(/"/g,'""')}"`).join(',')).join('\r\n');
-  csv += '\r\n\r\nEPIC ALLOCATION\r\nEpic,Owner,Target Utilization %,Status,Notes\r\n';
-  csv += eRows.map(r=>r.map(c=>`"${(c+'').replace(/"/g,'""')}"`).join(',')).join('\r\n');
+  let csv = 'Member,Role,Utilization %,Status,Epic,W-Number,Work Item,Work Item Status,Notes\r\n';
+  Object.values(S.members).forEach(m => {
+    const util   = m.util||0;
+    const status = util>100?'Over':util>=80?'On Track':'Under';
+    const gd = GUS_DATA[gusKey(m.name)] || GUS_DATA[m.name];
+    if (!gd || !gd.epics.length) {
+      csv += `"${m.name}","${m.role||''}","${util}%","${status}","","","","",""\r\n`;
+    } else {
+      gd.epics.forEach(ep => ep.items.forEach(wi => {
+        csv += [m.name,m.role||'',util+'%',status,ep.name,wi.w,wi.subj,wi.status,wi.notes||'']
+          .map(c=>`"${(c+'').replace(/"/g,'""')}"`).join(',') + '\r\n';
+      }));
+    }
+  });
   const a = document.createElement('a');
   a.href = 'data:text/csv;charset=utf-8,﻿'+encodeURIComponent(csv);
   a.download = 'AI_Delivery_Capacity_Planner_'+new Date().toISOString().slice(0,10)+'.csv';
@@ -697,19 +796,24 @@ function exportCSV() {
   toast('CSV exported');
 }
 
-/* ── TOAST ────────────────────────────────────────────────────── */
-let _toastTimer;
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg; el.classList.add('show');
-  clearTimeout(_toastTimer);
-  _toastTimer = setTimeout(()=>el.classList.remove('show'), 2200);
+/* ── STATUS BAR ───────────────────────────────────────────────── */
+function renderStatusBar() {
+  const members = Object.values(S.members);
+  const over  = members.filter(m=>m.util>100).length;
+  const under = members.filter(m=>m.util>0&&m.util<80).length;
+  document.getElementById('sb-info').textContent =
+    `${members.length} members · ${over} over-allocated · ${under} under-allocated · GUS data: Jun 11 2026`;
 }
 
-/* ── KEYBOARD ESC ─────────────────────────────────────────────── */
-document.addEventListener('keydown', e => {
-  if (e.key==='Escape') { closeMemberModal(); closeEpicModal(); }
-});
+/* ── TOAST ────────────────────────────────────────────────────── */
+let _tt;
+function toast(msg) {
+  const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show');
+  clearTimeout(_tt); _tt=setTimeout(()=>el.classList.remove('show'),2200);
+}
+
+/* ── KEYBOARD ─────────────────────────────────────────────────── */
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeMemberModal(); });
 
 /* ── BOOT ─────────────────────────────────────────────────────── */
 loadState();
